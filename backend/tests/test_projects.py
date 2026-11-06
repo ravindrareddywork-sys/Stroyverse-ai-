@@ -119,6 +119,95 @@ class TestProjectCreation:
         assert project["history"][0]["ai_model"] == "test-model"
         assert project["history"][0]["tokens_used"] == 123
 
+    def test_script_save_payload_creates_then_updates_same_project(self, client, app):
+        """Script Generator's create/update payload persists content without duplicating projects."""
+        generated_content = "TITLE: Signal Lost\n\nINT. RADIO STATION - NIGHT\nMara hears a voice."
+        generation_parameters = {
+            "topic": "A late-night radio host hears an impossible transmission.",
+            "genre": "Science Fiction",
+            "language": "English",
+            "tone": "Suspenseful",
+            "num_scenes": 3,
+            "requested_scenes": 3,
+            "detected_scenes": 1,
+            "characters_summary": "",
+            "logline": "A radio host receives a signal from tomorrow.",
+        }
+        create_response = client.post("/api/projects", json={
+            "title": "Signal Lost",
+            "content_type": "script",
+            "genre": generation_parameters["genre"],
+            "language": generation_parameters["language"],
+            "tone": generation_parameters["tone"],
+            "topic": generation_parameters["topic"],
+            "description": generation_parameters["logline"],
+            "content": generated_content,
+            "input_summary": (
+                "Topic: A late-night radio host hears an impossible transmission., "
+                "Genre: Science Fiction, Language: English, Tone: Suspenseful, Scenes: 3"
+            ),
+            "generation_parameters": generation_parameters,
+            "ai_model": "gemini-3.5-flash-lite",
+            "tokens_used": 128,
+        })
+
+        assert create_response.status_code == 201, create_response.get_json()
+        project_id = create_response.get_json()["data"]["id"]
+
+        updated_content = generated_content + "\n\nEXT. STATION - DAWN\nThe signal ends."
+        update_response = client.put(f"/api/projects/{project_id}", json={
+            "title": "Signal Lost",
+            "content_type": "script",
+            "genre": "Science Fiction",
+            "language": "English",
+            "tone": "Suspenseful",
+            "topic": generation_parameters["topic"],
+            "description": generation_parameters["logline"],
+            "content": updated_content,
+        })
+
+        assert update_response.status_code == 200, update_response.get_json()
+        assert update_response.get_json()["data"]["id"] == project_id
+        assert update_response.get_json()["data"]["generated_content"] == updated_content
+        listed_projects = client.get("/api/projects?project_type=script").get_json()["data"]
+        matching_projects = [
+            project for project in listed_projects["projects"]
+            if project["id"] == project_id
+        ]
+        assert len(matching_projects) == 1
+
+        retrieved = client.get(f"/api/projects/{project_id}").get_json()["data"]
+        assert len(retrieved["history"]) == 2
+        assert retrieved["history"][0]["content_snapshot"] == updated_content
+
+    @pytest.mark.parametrize("method", ["post", "put"])
+    def test_script_project_rejects_empty_content(self, client, method):
+        """An explicitly empty screenplay is rejected with a field-specific reason."""
+        project_id = None
+        if method == "put":
+            created = client.post("/api/projects", json={
+                "title": "Empty Script Test",
+                "content_type": "script",
+                "content": "Existing screenplay content."
+            })
+            project_id = created.get_json()["data"]["id"]
+
+        payload = {
+            "title": "Empty Script Test",
+            "content_type": "script",
+            "content": "   ",
+        }
+        response = (
+            client.put(f"/api/projects/{project_id}", json=payload)
+            if method == "put"
+            else client.post("/api/projects", json=payload)
+        )
+
+        assert response.status_code == 400
+        body = response.get_json()
+        assert body["message"] == "Validation failed. Please check your inputs."
+        assert body["errors"]["content"] == "Content cannot be empty."
+
     def test_create_project_character_type(self, client):
         """Creating a character project succeeds."""
         payload = {

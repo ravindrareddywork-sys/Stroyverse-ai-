@@ -488,7 +488,7 @@
           return;
         }
 
-        const title = currentScriptData.title || 'Screenplay Project';
+        const title = (currentScriptData.title || '').trim() || 'Screenplay Project';
         const content = editableTextarea ? editableTextarea.value : (currentScriptData.full_script || '');
         if (!content.trim()) {
           if (window.StoryVerse) window.StoryVerse.showToast('The screenplay has no content to save.', 'warning');
@@ -568,7 +568,16 @@
         } catch (err) {
           console.error('Screenplay save failed:', err);
           if (window.StoryVerse) {
-            window.StoryVerse.showToast(err.message || 'Could not save the screenplay. Please try again.', 'error');
+            const fieldErrors = err.errors && typeof err.errors === 'object'
+              ? Object.entries(err.errors)
+                .map(([field, reason]) => `${field}: ${typeof reason === 'string' ? reason : JSON.stringify(reason)}`)
+                .join(' ')
+              : '';
+            const errorMessage = err.message || 'Could not save the screenplay. Please try again.';
+            window.StoryVerse.showToast(
+              fieldErrors && !errorMessage.includes(fieldErrors) ? `${errorMessage} ${fieldErrors}` : errorMessage,
+              'error'
+            );
           }
         } finally {
           isSavingProject = false;

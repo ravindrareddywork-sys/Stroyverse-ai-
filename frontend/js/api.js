@@ -67,6 +67,14 @@
         if (!response.ok) {
           let msg = data?.message;
           const retryHeader = response.headers.get('Retry-After');
+          const validationDetails = data?.errors && typeof data.errors === 'object'
+            ? Object.entries(data.errors)
+              .map(([field, detail]) => {
+                const reason = typeof detail === 'string' ? detail : JSON.stringify(detail);
+                return `${field}: ${reason}`;
+              })
+              .join(' ')
+            : '';
           if (response.status === 429) {
             if (retryHeader) {
               msg = `Too many requests. Please wait ${retryHeader} seconds and try again.`;
@@ -76,6 +84,9 @@
           }
           if (!msg) {
             msg = `Request failed with status ${response.status}`;
+          }
+          if (validationDetails) {
+            msg = `${msg} ${validationDetails}`;
           }
 
           const error = new Error(msg);

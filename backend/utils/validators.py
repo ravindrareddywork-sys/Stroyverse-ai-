@@ -637,7 +637,7 @@ def validate_project_input(data, is_update=False):
                 errors["content_type"] = err
 
     if content_val is not None:
-        err = validate_optional_string(content_val, "Content", MAX_CONTENT_LENGTH)
+        err = validate_required_string(content_val, "Content", MAX_CONTENT_LENGTH)
         if err:
             errors["content"] = err
 

@@ -13,8 +13,8 @@
 | Frontend backend configuration | Pass | `frontend/js/config.js` points at the deployed backend and precedes `api.js` on each API-enabled page. No deployed frontend JavaScript localhost API target was found. |
 | Backend health and CORS | Pass (live, read-only) | Health and project-list GETs returned HTTP 200 with the expected frontend `Access-Control-Allow-Origin`; OPTIONS preflight returned HTTP 200. |
 | Project listing | Pass (live, read-only) | The endpoint returned a valid empty project list (`total: 0`); this does not demonstrate saved production data. |
-| Script save workflow | Pass in local regression coverage; live persistence unverified | Fixed the undefined textarea reference; local tests cover persisted content and generation metadata. No production write was made. |
-| Backend tests | Pass | `python -m pytest -q`: **380 passed, 1 skipped**. |
+| Script save workflow | Pass in local regression coverage; live persistence unverified | Uses the editable textarea and `content_type: "script"`; create/update, history, and blank-content validation are covered. Field-specific API validation errors are now shown. No production write was made. |
+| Backend tests | Pass | `python -m pytest -q`: **383 passed, 1 skipped**. |
 | Frontend JavaScript syntax | Pass | `node --check` passed for all **9** frontend JavaScript files. |
 | Real Gemini generation | Not verified | Automated generation tests use the mock provider. No live generation request was sent. |
 | Real multilingual E5 retrieval | Not verified | The real-model integration test is opt-in and was skipped; the production model was not loaded or measured. |
@@ -37,6 +37,8 @@ The frontend uses the configured API client:
 - `GET /api/projects/{id}` and the existing project/version endpoints to reopen and retrieve saved work.
 
 Backend persistence uses the existing `Project` and `GenerationHistory` tables; no new database table or migration was introduced. Regression tests verify saved script content and metadata. No production project was created during this assessment.
+
+The project API response has a generic top-level validation message plus a field-to-reason `errors` object. The API client previously retained that object but the Save Project toast displayed only the generic message. The client now includes field reasons in the user-visible error. The project validator also rejects an explicitly supplied blank content string while still allowing draft projects when content is omitted.
 
 ### RAG and embedding reliability
 
@@ -114,14 +116,14 @@ Render environment configuration and secret values were not accessible or inspec
 
 ```text
 Command: python -m pytest -q
-Result: 380 passed, 1 skipped in 30.33s
+Result: 383 passed, 1 skipped in 70.30s
 ```
 
 The skipped test is the real multilingual E5 integration test, gated behind `RUN_RAG_MODEL_INTEGRATION_TESTS=1`. RAG unit/storage tests use explicit deterministic mock embeddings and do not claim to validate real semantic model quality.
 
 ```text
 Command: python -m pytest tests\test_rag.py -q
-Result: 36 passed, 1 skipped
+Result: included in the full backend run; the standalone RAG suite was not rerun after the Script Generator validation changes.
 ```
 
 ```text
