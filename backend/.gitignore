@@ -1,0 +1,9 @@
+# StoryVerse AI - Backend .gitignore
+.env
+.env.*
+!.env.example
+instance/
+generated_files/
+__pycache__/
+*.py[cod]
+.pytest_cache/

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace Editor — StoryVerse AI</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/editor.css">
+  
+  <script src="../js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">
+        <div class="brand-icon">✨</div>
+        <span>StoryVerse AI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="story.html" class="nav-link">Story Generator</a></li>
+          <li><a href="script.html" class="nav-link">Script Generator</a></li>
+          <li><a href="characters.html" class="nav-link">Characters</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="editor.html" class="nav-link active">Workspace</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" aria-label="Toggle Theme">
+          <svg class="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="theme-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <button class="mobile-toggle" aria-label="Open Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="editor-page">
+    <div class="container">
+      <!-- Editor Top Bar -->
+      <div class="editor-toolbar">
+        <div class="editor-title-wrap">
+          <input type="text" id="editorTitle" class="editor-title-input" value="The Whispering Observatory" placeholder="Document Title...">
+          <span class="editor-badge-tag">Phase 8 AI Workspace</span>
+        </div>
+
+        <div class="editor-tool-group">
+          <button class="btn btn-secondary btn-sm" id="btnSampleText" title="Load sample literary scene">
+            <span>📖</span> Sample Text
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btnClearText" title="Clear writing area">
+            <span>🗑️</span> Clear
+          </button>
+          <div class="dropdown-wrapper">
+            <button class="btn btn-secondary btn-sm" id="exportDropdownBtn">
+              <span>📥</span> Export ▾
+            </button>
+            <div class="export-dropdown-menu" id="exportDropdownMenu" style="display: none;">
+              <button class="dropdown-item" data-format="txt"><span>📄</span> Plain Text (.txt)</button>
+              <button class="dropdown-item" data-format="pdf"><span>📑</span> PDF Document (.pdf)</button>
+              <button class="dropdown-item" data-format="docx"><span>📝</span> Word Document (.docx)</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="saveProjectBtn">
+            <span>💾</span> Save Draft
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Editor & Assistant Layout -->
+      <div class="editor-container">
+        <!-- Writing Area -->
+        <div class="editor-main-col">
+          <div class="editor-paper">
+            <div class="editor-paper-header">
+              <span class="paper-label">Manuscript & Scene Buffer</span>
+              <div class="paper-quick-actions">
+                <button class="btn-icon-subtle" id="btnCopyEditorText" title="Copy manuscript to clipboard">📋 Copy</button>
+              </div>
+            </div>
+
+            <textarea id="editorTextarea" class="editor-textarea" spellcheck="true" placeholder="Start typing your manuscript, screenplay scenes, or notes here... (You can also select text to apply AI tools specifically to your selection)">Dr. Evelyn Ross adjusted the frequency dials of the radio telescope atop the Atacama plateau, noticing an inexplicable pulse rhythmic as a heartbeat. The signal originated not from any cataloged satellite constellation, but from the void between Cygnus and Lyra.
+
+Behind her, the cooling fans of the supercomputing array hummed a steady monotone. Her graduate student, Arjun, rubbed his exhausted eyes and leaned over the phosphor-green spectrogram.
+
+"Doctor," Arjun murmured, his voice tightening. "The pulse isn't random noise. It's a binary prime sequence repeating every 11.4 seconds."</textarea>
+
+            <div class="editor-stats-bar">
+              <span id="wordCount">0 words</span>
+              <span id="charCount">0 characters</span>
+              <span id="readingTime">1 min read</span>
+              <span id="selectionStatus" class="selection-status">Scope: Full document</span>
+            </div>
+          </div>
+
+          <!-- AI Assistant Result Card & Comparison Panel -->
+          <div id="aiResultCard" class="ai-result-card" style="display: none;">
+            <div class="result-card-header">
+              <div class="result-card-title-group">
+                <span class="result-icon" id="resultIcon">✨</span>
+                <div>
+                  <h3 class="result-heading" id="resultHeading">AI Assistant Output</h3>
+                  <div class="result-meta-badges" id="resultMetaBadges">
+                    <span class="badge badge-primary" id="badgeOperation">Rewrite</span>
+                    <span class="badge badge-secondary" id="badgeModel">Gemini Pro</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="result-card-actions">
+                <button class="btn btn-primary btn-sm" id="btnReplaceText">
+                  <span>🔄</span> Replace in Editor
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btnAppendText">
+                  <span>➕</span> Append to End
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btnCopyResult">
+                  <span>📋</span> Copy
+                </button>
+                <button class="btn btn-icon-only btn-sm" id="btnDismissResult" title="Dismiss result">✕</button>
+              </div>
+            </div>
+
+            <!-- Comparison Tabs (Diff/View) -->
+            <div class="result-view-tabs">
+              <button class="view-tab-btn active" data-view="generated">Generated Output</button>
+              <button class="view-tab-btn" data-view="comparison" id="btnTabComparison">Side-by-Side Comparison</button>
+            </div>
+
+            <!-- Single Output View -->
+            <div class="result-content-view" id="viewSingleOutput">
+              <div class="result-text-box" id="resultOutputText"></div>
+            </div>
+
+            <!-- Side-by-Side Comparison View -->
+            <div class="result-comparison-view" id="viewComparison" style="display: none;">
+              <div class="comparison-column">
+                <div class="comparison-header">Original Text</div>
+                <div class="comparison-body" id="comparisonOriginalText"></div>
+              </div>
+              <div class="comparison-column comparison-column-generated">
+                <div class="comparison-header">AI Enhanced Version</div>
+                <div class="comparison-body" id="comparisonGeneratedText"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Assistant Sidebar -->
+        <aside class="assistant-panel" aria-label="AI Writing Assistant Sidebar">
+          <div class="assistant-panel-header">
+            <h3 class="assistant-panel-title">
+              <span>✨</span> Writing Assistant
+            </h3>
+            <span class="assistant-tag">Phase 8</span>
+          </div>
+
+          <p class="assistant-desc">Choose an AI tool to refine, translate, or expand your manuscript in real time.</p>
+
+          <!-- Assistant Tool Selection Pills -->
+          <div class="tool-selector-nav">
+            <button class="tool-pill active" data-tool="rewrite">
+              <span>🔄</span> Rewrite
+            </button>
+            <button class="tool-pill" data-tool="translate">
+              <span>🌐</span> Translate
+            </button>
+            <button class="tool-pill" data-tool="summarize">
+              <span>📝</span> Summarize
+            </button>
+            <button class="tool-pill" data-tool="dialogue">
+              <span>💬</span> Dialogue
+            </button>
+            <button class="tool-pill" data-tool="twist">
+              <span>⚡</span> Plot Twist
+            </button>
+            <button class="tool-pill" data-tool="continue">
+              <span>✍️</span> Continue
+            </button>
+          </div>
+
+          <!-- Tool Forms Container -->
+          <div class="tool-forms-container">
+
+            <!-- 1. Rewrite Tool Form -->
+            <div class="tool-form-panel active" id="form-rewrite">
+              <div class="form-group">
+                <label for="rewriteStyle" class="form-label">Stylistic Directive</label>
+                <select id="rewriteStyle" class="form-select">
+                  <option value="improve clarity" selected>Improve Clarity & Flow</option>
+                  <option value="improve grammar">Fix Grammar & Polish Phrasing</option>
+                  <option value="make it professional">Make Professional & Formal</option>
+                  <option value="make it creative">Make Imaginative & Sensory</option>
+                  <option value="make it engaging">Make Engaging & Fast-Paced</option>
+                  <option value="simplify language">Simplify Vocabulary & Sentence Length</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="rewriteLanguage" class="form-label">Language (Optional)</label>
+                <select id="rewriteLanguage" class="form-select">
+                  <option value="">Keep Original / Auto-detect</option>
+                  <option value="English">English</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Hindi">Hindi</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Scope</label>
+                <div class="scope-radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="rewriteScope" value="selected" id="scopeRewriteSelected">
+                    <span>Selected Text Only</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="rewriteScope" value="full" id="scopeRewriteFull" checked>
+                    <span>Full Document</span>
+                  </label>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnExecuteRewrite">
+                <span>🔄</span> Rewrite Text
+              </button>
+            </div>
+
+            <!-- 2. Translate Tool Form -->
+            <div class="tool-form-panel" id="form-translate" style="display: none;">
+              <div class="form-group">
+                <label for="translateTargetLang" class="form-label">Target Language</label>
+                <select id="translateTargetLang" class="form-select">
+                  <option value="English">English</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Hindi">Hindi (हिन्दी)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Scope</label>
+                <div class="scope-radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="translateScope" value="selected" id="scopeTranslateSelected">
+                    <span>Selected Text Only</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="translateScope" value="full" id="scopeTranslateFull" checked>
+                    <span>Full Document</span>
+                  </label>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnExecuteTranslate">
+                <span>🌐</span> Translate Text
+              </button>
+            </div>
+
+            <!-- 3. Summarize Tool Form -->
+            <div class="tool-form-panel" id="form-summarize" style="display: none;">
+              <div class="form-group">
+                <label for="summarizeLength" class="form-label">Summary Length</label>
+                <select id="summarizeLength" class="form-select">
+                  <option value="short">Short (1–2 concise paragraphs)</option>
+                  <option value="medium" selected>Medium (Standard synopsis)</option>
+                  <option value="detailed">Detailed (Comprehensive breakdown)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="summarizeLanguage" class="form-label">Output Language (Optional)</label>
+                <select id="summarizeLanguage" class="form-select">
+                  <option value="">Same as Manuscript</option>
+                  <option value="English">English</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Hindi">Hindi</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnExecuteSummarize">
+                <span>📝</span> Summarize Text
+              </button>
+            </div>
+
+            <!-- 4. Dialogue Generator Tool Form -->
+            <div class="tool-form-panel" id="form-dialogue" style="display: none;">
+              <div class="form-group">
+                <label for="dialogueCharacters" class="form-label">Characters Speaking</label>
+                <input type="text" id="dialogueCharacters" class="form-input" placeholder="e.g. Dr. Ross, Arjun" value="Dr. Ross, Arjun">
+              </div>
+
+              <div class="form-group">
+                <label for="dialogueGenre" class="form-label">Genre</label>
+                <select id="dialogueGenre" class="form-select">
+                  <option value="Science Fiction" selected>Science Fiction</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Thriller">Thriller</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Fantasy">Fantasy</option>
+                  <option value="Romance">Romance</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Adventure">Adventure</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="dialogueTone" class="form-label">Emotional Tone</label>
+                <select id="dialogueTone" class="form-select">
+                  <option value="Tense" selected>Tense & Urgent</option>
+                  <option value="Suspenseful">Suspenseful</option>
+                  <option value="Emotional">Emotional & Vulnerable</option>
+                  <option value="Dramatic">Dramatic</option>
+                  <option value="Mysterious">Mysterious</option>
+                  <option value="Funny">Funny & Witty</option>
+                  <option value="Romantic">Romantic</option>
+                  <option value="Dark">Dark</option>
+                  <option value="Inspirational">Inspirational</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="dialogueLanguage" class="form-label">Language</label>
+                <select id="dialogueLanguage" class="form-select">
+                  <option value="English" selected>English</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Hindi">Hindi</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnExecuteDialogue">
+                <span>💬</span> Generate Dialogue
+              </button>
+            </div>
+
+            <!-- 5. Plot Twist Tool Form -->
+            <div class="tool-form-panel" id="form-twist" style="display: none;">
+              <div class="form-group">
+                <label for="twistGenre" class="form-label">Genre</label>
+                <select id="twistGenre" class="form-select">
+                  <option value="Science Fiction" selected>Science Fiction</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Thriller">Thriller</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Fantasy">Fantasy</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Adventure">Adventure</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="twistTone" class="form-label">Tone</label>
+                <select id="twistTone" class="form-select">
+                  <option value="Suspenseful" selected>Suspenseful</option>
+                  <option value="Dramatic">Dramatic</option>
+                  <option value="Mysterious">Mysterious</option>
+                  <option value="Dark">Dark</option>
+                  <option value="Emotional">Emotional</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="twistLanguage" class="form-label">Language</label>
+                <select id="twistLanguage" class="form-select">
+                  <option value="English" selected>English</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Hindi">Hindi</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnExecuteTwist">
+                <span>⚡</span> Generate Plot Twists
+              </button>
+            </div>
+
+            <!-- 6. Continue Writing Tool Form -->
+            <div class="tool-form-panel" id="form-continue" style="display: none;">
+              <div class="form-group">
+                <label for="continueDirection" class="form-label">Story Direction (Optional)</label>
+                <textarea id="continueDirection" class="form-textarea form-textarea-sm" rows="3" placeholder="e.g. Reveal what the binary prime sequence decodes into, or introduce an unexpected intruder..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="continueTone" class="form-label">Tone (Optional)</label>
+                <select id="continueTone" class="form-select">
+                  <option value="">Match Existing Flow</option>
+                  <option value="Suspenseful">Suspenseful</option>
+                  <option value="Tense">Tense</option>
+                  <option value="Dramatic">Dramatic</option>
+                  <option value="Emotional">Emotional</option>
+                  <option value="Mysterious">Mysterious</option>
+                  <option value="Dark">Dark</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="continueLanguage" class="form-label">Language (Optional)</label>
+                <select id="continueLanguage" class="form-select">
+                  <option value="">Same as Manuscript</option>
+                  <option value="English">English</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Hindi">Hindi</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnExecuteContinue">
+                <span>✍️</span> Continue Writing
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Loading indicator -->
+          <div id="assistantLoading" class="assistant-loading-box" style="display: none;">
+            <div class="spinner"></div>
+            <p id="assistantLoadingText" class="assistant-loading-text">Generating with AI...</p>
+          </div>
+
+          <!-- Tips box -->
+          <div class="tip-box">
+            <h4>💡 Pro Tip</h4>
+            <p>Highlight any paragraph in the editor to target your Rewrite or Translation only to the selected passage.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>&copy; 2026 StoryVerse AI — Final Year College Project</div>
+      <div class="backend-status-badge">
+        <span class="status-dot"></span>
+        <span class="status-text">Backend Status</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/editor.js"></script>
+</body>
+</html>

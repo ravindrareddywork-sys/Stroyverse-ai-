@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Forge — StoryVerse AI</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/story.css">
+  <link rel="stylesheet" href="../css/characters.css">
+  
+  <script src="../js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">
+        <div class="brand-icon">✨</div>
+        <span>StoryVerse AI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="story.html" class="nav-link">Story Generator</a></li>
+          <li><a href="script.html" class="nav-link">Script Generator</a></li>
+          <li><a href="characters.html" class="nav-link active">Characters</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="editor.html" class="nav-link">Workspace</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" aria-label="Toggle Theme">
+          <svg class="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="theme-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <button class="mobile-toggle" aria-label="Open Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="generator-page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title"><span>👥</span> Character Forge</h1>
+        <p class="page-subtitle">Build 3-dimensional characters with psychological depth, compelling weaknesses, distinctive dialogue styles, and rich backstories.</p>
+      </div>
+
+      <!-- Studio Mode Selector -->
+      <div class="character-studio-tabs">
+        <button class="studio-tab-btn active" id="tabSingleChar">
+          <span>👤 Single Character Bible</span>
+        </button>
+        <button class="studio-tab-btn" id="tabVariations">
+          <span>🎭 Ensemble Variations</span>
+        </button>
+      </div>
+
+      <div class="generator-layout">
+        <!-- 1. Single Character Form Card -->
+        <div class="card" id="singleCharFormCard">
+          <form id="characterForm">
+            <!-- Character Concept / Description -->
+            <div class="form-group">
+              <label for="characterDescription" class="form-label">Character Concept & Narrative Dilemma <span class="required">*</span></label>
+              <textarea id="characterDescription" class="form-control" placeholder="E.g., A cynical former investigative journalist working as a silent archivist, struggling with guilt over a published story that ruined an innocent person..." maxlength="2000" rows="4" required></textarea>
+              <div class="form-hint">
+                <span>Who they are, their role, and internal dilemma</span>
+                <span id="charDescCounter">0 / 2000</span>
+              </div>
+            </div>
+
+            <!-- Name & Genre -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="charName" class="form-label">Character Name (Optional)</label>
+                <input type="text" id="charName" class="form-control" placeholder="Leave empty for AI name suggestion">
+              </div>
+
+              <div class="form-group">
+                <label for="charGenre" class="form-label">Story Genre <span class="required">*</span></label>
+                <select id="charGenre" class="form-control form-select" required>
+                  <option value="Fantasy" selected>Fantasy</option>
+                  <option value="Science Fiction">Science Fiction</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Thriller">Thriller</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Action">Action</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Role & Archetype -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="charRole" class="form-label">Narrative Role</label>
+                <select id="charRole" class="form-control form-select">
+                  <option value="protagonist" selected>Protagonist (Lead)</option>
+                  <option value="antagonist">Antagonist (Opponent/Villain)</option>
+                  <option value="mentor">Mentor / Guide</option>
+                  <option value="sidekick">Ally / Confidant</option>
+                  <option value="antihero">Antihero</option>
+                  <option value="supporting">Supporting Character</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="charArchetype" class="form-label">Personality / Archetype</label>
+                <input type="text" id="charArchetype" class="form-control" placeholder="E.g., Reluctant Hero, Shadow, Outlaw, Caregiver">
+              </div>
+            </div>
+
+            <!-- Age & Gender -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="charAge" class="form-label">Age / Life Stage</label>
+                <input type="text" id="charAge" class="form-control" placeholder="E.g., 34, Late 20s, Ancient">
+              </div>
+
+              <div class="form-group">
+                <label for="charGender" class="form-label">Gender (Optional)</label>
+                <input type="text" id="charGender" class="form-control" placeholder="E.g., Female, Male, Non-binary">
+              </div>
+            </div>
+
+            <!-- Language & Tone -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="charLanguage" class="form-label">Language <span class="required">*</span></label>
+                <select id="charLanguage" class="form-control form-select" required>
+                  <option value="English" selected>English</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Hindi">Hindi (हिंदी)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="charTone" class="form-label">Tone & Atmosphere</label>
+                <select id="charTone" class="form-control form-select">
+                  <option value="Emotional" selected>Emotional & Grounded</option>
+                  <option value="Suspenseful">Dark & Suspenseful</option>
+                  <option value="Inspirational">Inspirational & Mythic</option>
+                  <option value="Funny">Witty & Comedic</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Background & Setting -->
+            <div class="form-group">
+              <label for="charBackground" class="form-label">Origin & Backstory Hints (Optional)</label>
+              <input type="text" id="charBackground" class="form-control" placeholder="E.g., Exiled from the Royal Guard after defying an unlawful order">
+            </div>
+
+            <div class="form-group">
+              <label for="charInstructions" class="form-label">Custom Creative Directives (Optional)</label>
+              <input type="text" id="charInstructions" class="form-control" placeholder="E.g., Give them a distinctive nervous habit; emphasize moral ambiguity">
+            </div>
+
+            <div id="characterValidationErrors" class="form-error" role="alert" aria-live="polite"></div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="generateCharacterBtn">
+              <span class="btn-text">👥 Forge Character Profile</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- 2. Character Variations Form Card (Hidden by default) -->
+        <div class="card" id="variationsFormCard" style="display: none;">
+          <form id="variationsForm">
+            <div class="form-group">
+              <label for="varPremise" class="form-label">Story Premise or Core Conflict <span class="required">*</span></label>
+              <textarea id="varPremise" class="form-control" placeholder="E.g., A deep-sea research station discovers an unmapped biological structure transmitting rhythmic sonic pulses..." maxlength="2000" rows="4" required></textarea>
+              <div class="form-hint">
+                <span>The world, stakes, and narrative environment</span>
+                <span id="varPremiseCounter">0 / 2000</span>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="varGenre" class="form-label">Genre <span class="required">*</span></label>
+                <select id="varGenre" class="form-control form-select" required>
+                  <option value="Science Fiction" selected>Science Fiction</option>
+                  <option value="Fantasy">Fantasy</option>
+                  <option value="Thriller">Thriller</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Action">Action</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="varCount" class="form-label">Number of Character Concepts (2 - 5) <span class="required">*</span></label>
+                <input type="number" id="varCount" class="form-control" min="2" max="5" step="1" value="3" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="varRole" class="form-label">Focus Role</label>
+                <select id="varRole" class="form-control form-select">
+                  <option value="Ensemble Cast" selected>Ensemble Cast (Diverse Roles)</option>
+                  <option value="Protagonists">Candidate Protagonists</option>
+                  <option value="Antagonists">Candidate Antagonists</option>
+                  <option value="Supporting">Allies & Confidants</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="varLanguage" class="form-label">Language <span class="required">*</span></label>
+                <select id="varLanguage" class="form-control form-select">
+                  <option value="English" selected>English</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Hindi">Hindi (हिंदी)</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="variationsValidationErrors" class="form-error" role="alert" aria-live="polite"></div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="generateVariationsBtn">
+              <span class="btn-text">🎭 Generate Ensemble Concepts</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Sidebar Anatomy -->
+        <div class="preview-sidebar">
+          <div class="card">
+            <h3 class="card-title" style="font-size: 1.15rem;">Live Configuration</h3>
+            <p class="card-subtitle">Real-time character parameters</p>
+
+            <ul class="parameter-summary">
+              <li>
+                <span class="parameter-label">Genre:</span>
+                <span class="parameter-val" id="summaryCharGenre">Fantasy</span>
+              </li>
+              <li>
+                <span class="parameter-label">Language:</span>
+                <span class="parameter-val" id="summaryCharLang">English</span>
+              </li>
+              <li>
+                <span class="parameter-label">Target Role:</span>
+                <span class="parameter-val" id="summaryCharRole">Protagonist</span>
+              </li>
+              <li>
+                <span class="parameter-label">Tone:</span>
+                <span class="parameter-val" id="summaryCharTone">Emotional</span>
+              </li>
+            </ul>
+
+            <div class="script-format-guide" style="margin-top: 1.25rem;">
+              <h4><span>📜</span> 19-Point Profile Schema</h4>
+              <ul class="script-elements-list">
+                <li><span class="element-pill">PSYCHOLOGY</span> Core Want vs Core Need vs The Lie</li>
+                <li><span class="element-pill">FATAL FLAW</span> Vulnerability & blindspot</li>
+                <li><span class="element-pill">DYNAMICS</span> Backstory, Secrets & Relationships</li>
+                <li><span class="element-pill">ARC</span> Internal & external dramatic conflict</li>
+              </ul>
+            </div>
+
+            <div class="tip-box" style="margin-top: 1.25rem;">
+              <h4>🎭 Character Tip</h4>
+              <p>Great characters are defined by their internal contradiction: what they want consciously vs what they need unconsciously.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State Overlay -->
+      <div class="story-loading-state" id="characterLoadingState" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-avatar">👥</div>
+        <h3 class="loading-title" id="loadingTitle">Forging Character Profile...</h3>
+        <p class="loading-subtitle" id="loadingSubtitle">Synthesizing psychological matrices, strengths, weaknesses, and narrative arc.</p>
+        <div class="loading-progress-bar">
+          <div class="loading-progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Generated Character Result Section -->
+      <section class="character-result-section" id="characterResultSection" style="display: none;">
+        <div class="character-result-card">
+          <!-- Hero Header Banner -->
+          <div class="character-hero-banner">
+            <div class="character-identity">
+              <div class="character-avatar-badge" id="charAvatarIcon">👤</div>
+              <div>
+                <h2 class="character-name-display" id="resultCharName">Character Name</h2>
+                <div class="character-meta-badges">
+                  <span class="badge badge-primary" id="resultRoleBadge">Protagonist</span>
+                  <span class="badge badge-secondary" id="resultGenreBadge">Fantasy</span>
+                  <span class="badge badge-secondary" id="resultArchetypeBadge">Archetype</span>
+                  <span class="badge badge-secondary" id="resultAgeBadge">Age</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="character-action-toolbar">
+              <button class="btn btn-secondary btn-sm" id="charSaveProjectBtn" title="Save to database portfolio">
+                <span>💾 Save Project</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="charCopyBtn" title="Copy to clipboard">
+                <span>📋 Copy Profile</span>
+              </button>
+              <div class="dropdown-wrapper">
+                <button class="btn btn-secondary btn-sm" id="charExportBtn" title="Export character profile">
+                  <span>📥 Export ▾</span>
+                </button>
+                <div class="export-dropdown-menu" id="charExportMenu" style="display: none;">
+                  <button class="dropdown-item" data-format="txt"><span>📄 Plain Text (.txt)</span></button>
+                  <button class="dropdown-item" data-format="pdf"><span>📑 PDF Document (.pdf)</span></button>
+                  <button class="dropdown-item" data-format="docx"><span>📝 Word Document (.docx)</span></button>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" id="charRegenerateBtn" title="Regenerate character">
+                <span>🔄 Regenerate</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- View Mode Toggles -->
+          <div class="char-view-modes">
+            <button class="view-mode-btn active" id="viewBibleBtn">📖 3D Profile Bible (19 Dimensions)</button>
+            <button class="view-mode-btn" id="viewVariationsBtn" style="display: none;">🎭 Ensemble Variations</button>
+            <button class="view-mode-btn" id="viewCharEditableBtn">✏️ Editable Profile Text</button>
+          </div>
+
+          <!-- 1. 19-Point Profile Bible View -->
+          <div class="profile-bible-view" id="bibleView">
+            <!-- Psychological Matrix -->
+            <div class="psych-matrix-card">
+              <div class="psych-matrix-header">
+                <span>🧠</span> Core Psychological Matrix
+              </div>
+              <div class="psych-matrix-grid">
+                <div class="psych-quadrant">
+                  <div class="psych-label want">🎯 Core Want (External Goal)</div>
+                  <p class="psych-val" id="valCoreWant">—</p>
+                </div>
+                <div class="psych-quadrant">
+                  <div class="psych-label need">🌱 Core Need (Internal Truth)</div>
+                  <p class="psych-val" id="valCoreNeed">—</p>
+                </div>
+                <div class="psych-quadrant">
+                  <div class="psych-label flaw">⚡ Fatal Flaw</div>
+                  <p class="psych-val" id="valFatalFlaw">—</p>
+                </div>
+                <div class="psych-quadrant">
+                  <div class="psych-label lie">🔒 The Lie They Believe</div>
+                  <p class="psych-val" id="valTheLie">—</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Strengths vs Weaknesses -->
+            <div class="strengths-weaknesses-grid">
+              <div class="trait-card">
+                <div class="trait-card-title strengths">
+                  <span>🛡️</span> Key Strengths & Assets
+                </div>
+                <div class="trait-card-body" id="valStrengths"></div>
+              </div>
+              <div class="trait-card">
+                <div class="trait-card-title weaknesses">
+                  <span>⚠️</span> Weaknesses & Vulnerabilities
+                </div>
+                <div class="trait-card-body" id="valWeaknesses"></div>
+              </div>
+            </div>
+
+            <!-- Narrative Dimensions Grid -->
+            <div class="narrative-dimensions-grid">
+              <div class="dim-card">
+                <div class="dim-card-title"><span>🎨</span> Physical Appearance</div>
+                <div class="dim-card-body" id="valAppearance"></div>
+              </div>
+
+              <div class="dim-card">
+                <div class="dim-card-title"><span>🎭</span> Personality Traits</div>
+                <div class="dim-card-body" id="valTraits"></div>
+              </div>
+
+              <div class="dim-card full-width">
+                <div class="dim-card-title"><span>📜</span> Backstory & Formative Trauma</div>
+                <div class="dim-card-body" id="valBackstory"></div>
+              </div>
+
+              <div class="dim-card">
+                <div class="dim-card-title"><span>🔥</span> Motivations & Objectives</div>
+                <div class="dim-card-body" id="valMotivations"></div>
+              </div>
+
+              <div class="dim-card">
+                <div class="dim-card-title"><span>😨</span> Deepest Fears</div>
+                <div class="dim-card-body" id="valFears"></div>
+              </div>
+
+              <div class="dim-card">
+                <div class="dim-card-title"><span>🗝️</span> Secrets & Hidden Past</div>
+                <div class="dim-card-body" id="valSecrets"></div>
+              </div>
+
+              <div class="dim-card">
+                <div class="dim-card-title"><span>🤝</span> Key Relationships & Dynamics</div>
+                <div class="dim-card-body" id="valRelationships"></div>
+              </div>
+
+              <div class="dim-card">
+                <div class="dim-card-title"><span>⚔️</span> Internal & External Conflicts</div>
+                <div class="dim-card-body" id="valConflicts"></div>
+              </div>
+
+              <div class="dim-card full-width">
+                <div class="dim-card-title"><span>📈</span> Character Arc & Role in Story</div>
+                <div class="dim-card-body" id="valArc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Variations / Ensemble View -->
+          <div class="variations-container" id="variationsContainer" style="display: none;">
+            <!-- Rendered via JS -->
+          </div>
+
+          <!-- 3. Editable Textarea View -->
+          <div class="char-editable-view" id="charEditableView">
+            <label for="charEditableText" class="form-label" style="font-weight: 600;">Full Character Profile Bible (Editable)</label>
+            <textarea id="charEditableText" class="char-editor-textarea" rows="22"></textarea>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>&copy; 2026 StoryVerse AI — Final Year College Project</div>
+      <div class="backend-status-badge">
+        <span class="status-dot"></span>
+        <span class="status-text">Backend Status</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/characters.js"></script>
+</body>
+</html>

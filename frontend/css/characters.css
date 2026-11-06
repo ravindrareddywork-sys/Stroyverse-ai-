@@ -1,0 +1,418 @@
+/* ============================================================
+   StoryVerse AI — Character Studio Stylesheet (characters.css)
+   Phase 7: Character Forge, 19-Point Profile Bible & Ensemble Cards
+   ============================================================ */
+
+/* Studio Tab Switcher */
+.character-studio-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--bg-surface-alt);
+  padding: 0.35rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  max-width: 550px;
+}
+
+.studio-tab-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.studio-tab-btn.active {
+  background-color: var(--bg-surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Loading Overlay */
+.loading-avatar {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: pulseAvatar 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseAvatar {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Character Result Section */
+.character-result-section {
+  margin-top: 3.5rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.character-result-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Character Header Banner */
+.character-hero-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.character-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.character-avatar-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.character-name-display {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.character-meta-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.character-action-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* View Mode Toggles */
+.char-view-modes {
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--bg-surface-alt);
+  padding: 0.35rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.char-view-modes .view-mode-btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.65rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.char-view-modes .view-mode-btn.active {
+  background-color: var(--bg-surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   19-POINT PROFILE BIBLE VIEW
+   ============================================================ */
+
+.profile-bible-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Psychological Matrix */
+.psych-matrix-card {
+  background: linear-gradient(135deg, var(--bg-surface-alt), var(--bg-surface));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.psych-matrix-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.25rem;
+}
+
+.psych-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.psych-quadrant {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  transition: transform var(--transition-fast);
+}
+
+.psych-quadrant:hover {
+  transform: translateY(-2px);
+}
+
+.psych-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.psych-label.want { color: #3b82f6; }
+.psych-label.need { color: #10b981; }
+.psych-label.flaw { color: #ef4444; }
+.psych-label.lie { color: #f59e0b; }
+
+.psych-val {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Two-Column Matrix: Strengths vs Weaknesses */
+.strengths-weaknesses-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.trait-card {
+  background-color: var(--bg-surface-alt);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.trait-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trait-card-title.strengths { color: #10b981; }
+.trait-card-title.weaknesses { color: #ef4444; }
+
+.trait-card-body {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+/* Narrative Dimensions Grid */
+.narrative-dimensions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.dim-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.dim-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.dim-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dim-card-body {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+/* ============================================================
+   VARIATIONS & ENSEMBLE VIEW
+   ============================================================ */
+
+.variations-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.variation-concept-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.variation-concept-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.var-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.var-concept-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.var-concept-role {
+  font-size: 0.82rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.var-logline {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+}
+
+.var-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--bg-surface-alt);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+}
+
+.var-meta-item strong {
+  color: var(--text-primary);
+}
+
+.var-meta-item span {
+  color: var(--text-secondary);
+}
+
+.var-expand-btn {
+  width: 100%;
+}
+
+/* ============================================================
+   EDITABLE TEXTAREA VIEW
+   ============================================================ */
+
+.char-editable-view {
+  display: none;
+}
+
+.char-editor-textarea {
+  width: 100%;
+  min-height: 550px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  background-color: var(--bg-surface-alt);
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  resize: vertical;
+}
+
+.char-editor-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .character-result-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .character-hero-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .strengths-weaknesses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .narrative-dimensions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .variations-container {
+    grid-template-columns: 1fr;
+  }
+}

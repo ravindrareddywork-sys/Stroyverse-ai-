@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryVerse AI — Generative AI Story & Script Platform</title>
+  <meta name="description" content="StoryVerse AI is an intelligent creative writing platform powered by Generative AI for generating full-length stories, screenplays, and character profiles.">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">✨</div>
+        <span>StoryVerse AI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link active">Home</a></li>
+          <li><a href="pages/story.html" class="nav-link">Story Generator</a></li>
+          <li><a href="pages/script.html" class="nav-link">Script Generator</a></li>
+          <li><a href="pages/characters.html" class="nav-link">Characters</a></li>
+          <li><a href="pages/dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="pages/editor.html" class="nav-link">Workspace</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+          <svg class="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="theme-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+
+        <a href="pages/story.html" class="btn btn-primary btn-sm">Get Started</a>
+
+        <button class="mobile-toggle" aria-label="Open Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section" style="padding: 5rem 0 4rem; text-align: center; background: radial-gradient(circle at 50% 20%, var(--primary-light) 0%, transparent 60%);">
+      <div class="container">
+        <div class="badge badge-primary" style="margin-bottom: 1.5rem; padding: 0.4rem 1rem; font-size: 0.85rem;">
+          🚀 BTech Final Year Project — Powered by Google Gemini AI
+        </div>
+        
+        <h1 style="font-size: 3.25rem; font-weight: 800; line-height: 1.15; max-width: 850px; margin: 0 auto 1.5rem; letter-spacing: -0.02em;">
+          Unleash Epic Stories & Hollywood Scripts with <span style="background: linear-gradient(135deg, var(--primary), #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Generative AI</span>
+        </h1>
+
+        <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 680px; margin: 0 auto 2.5rem; line-height: 1.6;">
+          StoryVerse AI turns concepts into richly layered narratives, screenplays, and multi-dimensional characters across English, Telugu, Tamil, and Hindi.
+        </p>
+
+        <div class="hero-cta-group" style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 3.5rem;">
+          <a href="pages/story.html" class="btn btn-primary btn-lg">Generate Full Story →</a>
+          <a href="pages/script.html" class="btn btn-secondary btn-lg">Write Screenplay 🎬</a>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 900px; margin: 0 auto;" class="card-grid-4">
+          <div class="card" style="padding: 1.25rem; text-align: center;">
+            <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">4+</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Languages Supported</div>
+          </div>
+          <div class="card" style="padding: 1.25rem; text-align: center;">
+            <div style="font-size: 1.8rem; font-weight: 800; color: #EC4899;">9+</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Curated Genres</div>
+          </div>
+          <div class="card" style="padding: 1.25rem; text-align: center;">
+            <div style="font-size: 1.8rem; font-weight: 800; color: #0EA5E9;">100%</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Screenplay Formatted</div>
+          </div>
+          <div class="card" style="padding: 1.25rem; text-align: center;">
+            <div style="font-size: 1.8rem; font-weight: 800; color: #10B981;">3</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Export Types (PDF/DOCX/TXT)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature Cards Section -->
+    <section style="padding: 5rem 0;">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 3.5rem;">
+          <h2 style="font-size: 2.2rem; font-weight: 700; margin-bottom: 0.75rem;">Purpose-Built for Authors & Creators</h2>
+          <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Everything you need to craft high-impact literature, scripts, and dramatic arcs in minutes.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;" class="card-grid-3">
+          <div class="card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📚</div>
+            <h3 class="card-title">Structured Story Generator</h3>
+            <p class="card-subtitle" style="margin-bottom: 1.25rem;">Generates comprehensive 10-point outlines including title, setting, character list, conflict, climax, and satisfying resolution.</p>
+            <a href="pages/story.html" style="font-weight: 600; font-size: 0.9rem;">Launch Story Studio →</a>
+          </div>
+
+          <div class="card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🎬</div>
+            <h3 class="card-title">Screenplay Studio</h3>
+            <p class="card-subtitle" style="margin-bottom: 1.25rem;">Standard industry screenplay layouts with sluglines (EXT/INT), character cue blocks, parentheticals, and smooth transitions.</p>
+            <a href="pages/script.html" style="font-weight: 600; font-size: 0.9rem;">Start Screenplay →</a>
+          </div>
+
+          <div class="card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">👥</div>
+            <h3 class="card-title">Character Forge</h3>
+            <p class="card-subtitle" style="margin-bottom: 1.25rem;">Deep character bibles with psychological archetypes, core flaws, internal motivations, dialogue voice, and backstories.</p>
+            <a href="pages/characters.html" style="font-weight: 600; font-size: 0.9rem;">Forge Characters →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section style="padding: 4rem 0 5rem; background-color: var(--bg-surface-alt);">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+          <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">How StoryVerse Works</h2>
+          <p style="color: var(--text-secondary);">Four intuitive steps from initial spark to exported manuscript.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;" class="card-grid-4">
+          <div class="card" style="text-align: center;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-weight: 700;">1</div>
+            <h4 style="margin-bottom: 0.5rem;">Choose Genre</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Select from Thriller, Sci-Fi, Romance, Comedy, and 5 other distinct modes.</p>
+          </div>
+
+          <div class="card" style="text-align: center;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-weight: 700;">2</div>
+            <h4 style="margin-bottom: 0.5rem;">Input Concept</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Describe your topic, audience, character names, and tone preferences.</p>
+          </div>
+
+          <div class="card" style="text-align: center;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-weight: 700;">3</div>
+            <h4 style="margin-bottom: 0.5rem;">AI Generation</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Gemini AI crafts rich prose or formatted scenes following custom prompts.</p>
+          </div>
+
+          <div class="card" style="text-align: center;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-weight: 700;">4</div>
+            <h4 style="margin-bottom: 0.5rem;">Edit & Export</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Refine within the workspace editor and export to PDF, Word, or TXT.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">
+            <div class="brand-icon">✨</div>
+            <span>StoryVerse AI</span>
+          </div>
+          <p>An intelligent creative writing and screenplay generator using Google Gemini AI and Python Flask.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Studio Tools</h4>
+          <ul class="footer-links">
+            <li><a href="pages/story.html">Story Generator</a></li>
+            <li><a href="pages/script.html">Script Generator</a></li>
+            <li><a href="pages/characters.html">Character Forge</a></li>
+            <li><a href="pages/editor.html">Workspace Editor</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Workspace</h4>
+          <ul class="footer-links">
+            <li><a href="pages/dashboard.html">Project Dashboard</a></li>
+            <li><a href="pages/editor.html">Drafts</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>College Project</h4>
+          <ul class="footer-links">
+            <li><span style="color: var(--text-muted); font-size: 0.85rem;">BTech CSE Final Year</span></li>
+            <li><span style="color: var(--text-muted); font-size: 0.85rem;">Academic Year 2026</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 StoryVerse AI — Academic Final Year Project</div>
+        <div class="backend-status-badge">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking Backend...</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

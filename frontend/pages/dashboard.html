@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Dashboard — StoryVerse AI</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  
+  <script src="../js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">
+        <div class="brand-icon">✨</div>
+        <span>StoryVerse AI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="story.html" class="nav-link">Story Generator</a></li>
+          <li><a href="script.html" class="nav-link">Script Generator</a></li>
+          <li><a href="characters.html" class="nav-link">Characters</a></li>
+          <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+          <li><a href="editor.html" class="nav-link">Workspace</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" aria-label="Toggle Theme">
+          <svg class="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="theme-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <a href="editor.html" class="btn btn-primary btn-sm">+ New Project</a>
+        <button class="mobile-toggle" aria-label="Open Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-page">
+    <div class="container">
+      <div class="page-header page-header-row">
+        <div>
+          <h1 class="page-title">Project Dashboard</h1>
+          <p class="page-subtitle">Manage, edit, search, and version-control all your saved stories, screenplays, and character bibles.</p>
+        </div>
+        <div class="dashboard-header-actions">
+          <a href="editor.html" class="btn btn-primary">
+            <span>✨</span> Create New Project
+          </a>
+        </div>
+      </div>
+
+      <!-- Metrics Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon">📚</div>
+          <div class="metric-info">
+            <span class="metric-label">Total Projects</span>
+            <span class="metric-value" id="statTotal">0</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📖</div>
+          <div class="metric-info">
+            <span class="metric-label">Stories</span>
+            <span class="metric-value" id="statStory">0</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🎬</div>
+          <div class="metric-info">
+            <span class="metric-label">Screenplays</span>
+            <span class="metric-value" id="statScript">0</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">👥</div>
+          <div class="metric-info">
+            <span class="metric-label">Characters</span>
+            <span class="metric-value" id="statCharacter">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Controls -->
+      <div class="dashboard-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="dashboardSearch" class="form-control" placeholder="Search projects by title, description, or premise...">
+          <button id="btnClearSearch" class="search-clear-btn" style="display: none;">✕</button>
+        </div>
+
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="story">Stories</button>
+          <button class="filter-btn" data-filter="script">Screenplays</button>
+          <button class="filter-btn" data-filter="character">Characters</button>
+          <button class="filter-btn" data-filter="other">Other</button>
+        </div>
+
+        <div class="sort-group">
+          <label for="sortSelect" class="sort-label">Sort:</label>
+          <select id="sortSelect" class="sort-select">
+            <option value="updated_at:desc" selected>Recently Updated</option>
+            <option value="created_at:desc">Recently Created</option>
+            <option value="title:asc">Title (A–Z)</option>
+            <option value="title:desc">Title (Z–A)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="dashboard-loading" id="dashboardLoadingState" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading your creative portfolio from database...</p>
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="projects-grid" id="projectsGrid">
+        <!-- Rendered dynamically by dashboard.js -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="dashboardEmptyState" style="display: none;">
+        <div class="empty-state-icon">📁</div>
+        <h3 class="empty-state-title">No projects found</h3>
+        <p class="empty-state-desc">You don't have any projects matching your current filters. Create a new story or screenplay to begin building your portfolio.</p>
+        <div class="empty-state-actions">
+          <a href="story.html" class="btn btn-primary">Start a New Story</a>
+          <a href="script.html" class="btn btn-secondary">Create a Screenplay</a>
+          <a href="characters.html" class="btn btn-secondary">Forge a Character</a>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="dashboard-pagination" id="dashboardPagination" style="display: none;">
+        <button class="btn btn-secondary btn-sm" id="btnPrevPage" disabled>← Previous</button>
+        <span class="pagination-indicator" id="paginationInfo">Page 1 of 1</span>
+        <button class="btn btn-secondary btn-sm" id="btnNextPage" disabled>Next →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Version History Modal -->
+  <div class="modal-backdrop" id="versionModal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="versionModalTitle">Project Version History</h3>
+        <button class="modal-close" id="btnCloseVersionModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Review previous snapshots of this project. You can inspect snapshot text or restore any version.</p>
+        <div class="version-list" id="versionList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="version-preview-pane" id="versionPreviewPane" style="display: none;">
+          <div class="version-preview-header">
+            <span class="version-preview-tag" id="previewTag">Snapshot Preview</span>
+            <button class="btn btn-primary btn-sm" id="btnRestoreVersion">
+              <span>🔄</span> Restore This Version
+            </button>
+          </div>
+          <div class="version-preview-content" id="versionPreviewContent"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseVersionModalBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteModal" style="display: none;">
+    <div class="modal-dialog modal-dialog-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Project</h3>
+        <button class="modal-close" id="btnCloseDeleteModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="deleteProjectTitle">this project</strong>?</p>
+        <p class="text-danger" style="font-size: 0.85rem; margin-top: 0.5rem;">This action is permanent and will remove all version history snapshots associated with this project.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelDelete">Cancel</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Delete Project</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>&copy; 2026 StoryVerse AI — Final Year College Project</div>
+      <div class="backend-status-badge">
+        <span class="status-dot"></span>
+        <span class="status-text">Backend Status</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

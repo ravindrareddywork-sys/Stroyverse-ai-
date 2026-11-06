@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & instances
+backend/instance/
+backend/*.db
+*.db
+backend/.env
+.env
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+.gemini/

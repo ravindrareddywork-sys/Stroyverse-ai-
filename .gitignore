@@ -1,0 +1,71 @@
+# ============================================================
+# StoryVerse AI — .gitignore
+# ============================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# --- Environment & Secrets (NEVER commit these) ---
+.env
+backend/.env
+*.env.local
+*.env.production
+*.env.staging
+secrets.json
+
+# --- Database ---
+*.db
+*.sqlite
+*.sqlite3
+backend/instance/*.db
+backend/instance/*.sqlite3
+
+# --- Generated Files ---
+backend/generated_files/*.txt
+backend/generated_files/*.pdf
+backend/generated_files/*.docx
+
+# --- IDE & OS ---
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Testing ---
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.coverage
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Node (if ever needed) ---
+node_modules/
+npm-debug.log*
+
+# --- Misc ---
+*.bak
+*.tmp
+.cache/

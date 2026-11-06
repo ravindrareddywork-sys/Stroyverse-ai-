@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Generator — StoryVerse AI</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/story.css">
+  
+  <script src="../js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">
+        <div class="brand-icon">✨</div>
+        <span>StoryVerse AI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="story.html" class="nav-link active">Story Generator</a></li>
+          <li><a href="script.html" class="nav-link">Script Generator</a></li>
+          <li><a href="characters.html" class="nav-link">Characters</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="editor.html" class="nav-link">Workspace</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" aria-label="Toggle Theme">
+          <svg class="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="theme-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <button class="mobile-toggle" aria-label="Open Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="generator-page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title"><span>📚</span> Story Studio</h1>
+        <p class="page-subtitle">Configure your narrative parameters and generate comprehensive, multi-chapter story drafts powered by Google Gemini AI.</p>
+      </div>
+
+      <div class="generator-layout">
+        <!-- Input Form Card -->
+        <div class="card">
+          <form id="storyForm">
+            <!-- Topic / Premise -->
+            <div class="form-group">
+              <label for="topic" class="form-label">Story Topic or Core Premise <span class="required">*</span></label>
+              <textarea id="topic" class="form-control" placeholder="E.g., A clockmaker discovers one of his antique clocks can rewind time by seven minutes, but each use erases a cherished memory..." maxlength="2000" required></textarea>
+              <div class="form-hint">
+                <span>Be as specific or open-ended as you like</span>
+                <span id="topicCharCount">0 / 2000</span>
+              </div>
+            </div>
+
+            <!-- Genre & Language -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="genre" class="form-label">Genre <span class="required">*</span></label>
+                <select id="genre" class="form-control form-select">
+                  <option value="Fantasy" selected>Fantasy</option>
+                  <option value="Science Fiction">Science Fiction</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Romance">Romance</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Thriller">Thriller</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Adventure">Adventure</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="language" class="form-label">Language <span class="required">*</span></label>
+                <select id="language" class="form-control form-select">
+                  <option value="English" selected>English</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Hindi">Hindi (हिंदी)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Tone & Length -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="tone" class="form-label">Emotional Tone</label>
+                <select id="tone" class="form-control form-select">
+                  <option value="Emotional" selected>Emotional & Deep</option>
+                  <option value="Suspenseful">Suspenseful & Tense</option>
+                  <option value="Inspirational">Inspirational & Uplifting</option>
+                  <option value="Funny">Funny & Witty</option>
+                  <option value="Dark">Dark & Gritty</option>
+                  <option value="Romantic">Romantic</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="length" class="form-label">Story Length</label>
+                <select id="length" class="form-control form-select">
+                  <option value="Short">Short (~500 - 800 words)</option>
+                  <option value="Medium" selected>Medium (~1,000 - 1,800 words)</option>
+                  <option value="Long">Long (~2,000 - 3,500 words)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Audience & Character Count -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="audience" class="form-label">Target Audience</label>
+                <select id="audience" class="form-control form-select">
+                  <option value="General Audience" selected>General Audience</option>
+                  <option value="Children">Children</option>
+                  <option value="Teenagers">Young Adult / Teens</option>
+                  <option value="Adults">Adults</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="characterCount" class="form-label">Main Character Count (1 - 10)</label>
+                <input type="number" id="characterCount" class="form-control" min="1" max="10" value="2">
+              </div>
+            </div>
+
+            <!-- Character Names (Optional) -->
+            <div class="form-group">
+              <label for="characterNames" class="form-label">Character Names (Optional)</label>
+              <input type="text" id="characterNames" class="form-control" placeholder="E.g., Arun, Maya (comma-separated)">
+              <div class="form-hint"><span>Provide names if you want specific characters in the story</span></div>
+            </div>
+
+            <!-- Setting -->
+            <div class="form-group">
+              <label for="setting" class="form-label">Setting & World Building (Optional)</label>
+              <input type="text" id="setting" class="form-control" placeholder="E.g., Victorian London, a colony on Europa, misty village in the Himalayas...">
+            </div>
+
+            <!-- Additional Custom Instructions -->
+            <div class="form-group">
+              <label for="instructions" class="form-label">Custom Creative Directives (Optional)</label>
+              <input type="text" id="instructions" class="form-control" placeholder="E.g., Include an unexpected plot twist near the climax; emphasize poetic imagery...">
+            </div>
+
+            <!-- RAG Knowledge Base Integration -->
+            <div class="form-group rag-toggle-group" style="background: rgba(139, 92, 246, 0.08); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.25); margin-bottom: 20px;">
+              <label class="form-checkbox-label" style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500;">
+                <input type="checkbox" id="storyUseRag" checked style="width: 18px; height: 18px; accent-color: var(--primary-color, #8b5cf6);">
+                <span>🧠 Enable RAG Knowledge Grounding</span>
+              </label>
+              <div class="form-hint" style="margin-top: 4px; font-size: 0.82rem; color: #a1a1aa;">
+                Retrieves worldbuilding lore, canon rules, and reference context from vector memory (ChromaDB) to ground generation.
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="generateStoryBtn">
+              <span class="btn-text">✨ Generate Full Story</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Sidebar Summary & Tips -->
+        <div class="preview-sidebar">
+          <div class="card">
+            <h3 class="card-title" style="font-size: 1.15rem;">Configuration Summary</h3>
+            <p class="card-subtitle">Real-time narrative parameters</p>
+
+            <ul class="parameter-summary">
+              <li>
+                <span class="parameter-label">Genre:</span>
+                <span class="parameter-val" id="summaryGenre">Fantasy</span>
+              </li>
+              <li>
+                <span class="parameter-label">Language:</span>
+                <span class="parameter-val" id="summaryLanguage">English</span>
+              </li>
+              <li>
+                <span class="parameter-label">Tone:</span>
+                <span class="parameter-val" id="summaryTone">Emotional</span>
+              </li>
+              <li>
+                <span class="parameter-label">Length:</span>
+                <span class="parameter-val" id="summaryLength">Medium</span>
+              </li>
+            </ul>
+
+            <div class="tip-box">
+              <h4>💡 Pro Tip for Authors</h4>
+              <p>For richer stories, mention a primary goal and a personal flaw for your protagonist in the premise input.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State Overlay -->
+      <div class="story-loading-state" id="storyLoadingState">
+        <div class="loading-spinner-large"></div>
+        <h3 class="loading-title" id="loadingTitle">StoryVerse AI is weaving your story...</h3>
+        <p class="loading-desc" id="loadingDesc">Crafting characters, conflicts, and climatic arcs</p>
+      </div>
+
+      <!-- Generated Story Result Section -->
+      <section class="story-result-section" id="storyResultSection">
+        <div class="story-result-card">
+          <!-- Header Row -->
+          <div class="story-header-row">
+            <div>
+              <h2 class="story-title-display" id="resultStoryTitle">Story Title</h2>
+              <div class="story-meta-tags">
+                <span class="badge badge-primary" id="resultGenreBadge">Fantasy</span>
+                <span class="badge badge-secondary" id="resultLanguageBadge">English</span>
+                <span class="badge badge-secondary" id="resultToneBadge">Emotional</span>
+                <span class="badge badge-secondary" id="resultLengthBadge">Medium</span>
+              </div>
+            </div>
+
+            <!-- Operations Toolbar -->
+            <div class="story-action-toolbar">
+              <button class="btn btn-secondary btn-sm" id="storySaveProjectBtn" title="Save to database portfolio">
+                <span>💾 Save Project</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="storyCopyBtn" title="Copy to clipboard">
+                <span>📋 Copy Story</span>
+              </button>
+              <div class="dropdown-wrapper">
+                <button class="btn btn-secondary btn-sm" id="storyExportBtn" title="Export story">
+                  <span>📥 Export ▾</span>
+                </button>
+                <div class="export-dropdown-menu" id="storyExportMenu" style="display: none;">
+                  <button class="dropdown-item" data-format="txt"><span>📄 Plain Text (.txt)</span></button>
+                  <button class="dropdown-item" data-format="pdf"><span>📑 PDF Document (.pdf)</span></button>
+                  <button class="dropdown-item" data-format="docx"><span>📝 Word Document (.docx)</span></button>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="storyExpandBtn" title="Expand with sensory details">
+                <span>🔍 Expand</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="storyShortenBtn" title="Condense story text">
+                <span>✂️ Shorten</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="storyContinueBtn" title="Continue the narrative">
+                <span>✍️ Continue</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="storyRegenerateBtn" title="Regenerate story">
+                <span>🔄 Regenerate</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- RAG Retrieved Context Banner -->
+          <div class="rag-context-banner" id="storyRagContextBanner" style="display: none; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px 16px; margin: 15px 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 0.85rem; font-weight: 600; color: #60a5fa; display: flex; align-items: center; gap: 6px;">
+                <span>📚</span> Retrieved RAG Knowledge Context (<span id="storyRagChunkCount">0</span> chunks grounded)
+              </span>
+              <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; font-size: 0.75rem;">ChromaDB Vector Store</span>
+            </div>
+            <div id="storyRagChipsContainer" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+          </div>
+
+          <!-- View Mode Toggle -->
+          <div class="story-view-modes">
+            <button class="view-mode-btn active" id="viewStructuredBtn">Structured Outline (10 Acts)</button>
+            <button class="view-mode-btn" id="viewEditableBtn">Editable Full Manuscript</button>
+          </div>
+
+          <!-- 1. Structured Outline View -->
+          <div class="structured-sections-view" id="structuredView">
+            <!-- Synopsis -->
+            <div class="story-section-card" id="cardSummary">
+              <h4 class="story-section-title"><span>📖</span> Synopsis</h4>
+              <p class="story-section-body" id="sectionSummary"></p>
+            </div>
+
+            <!-- Setting & Characters -->
+            <div class="form-grid-2">
+              <div class="story-section-card" id="cardSetting">
+                <h4 class="story-section-title"><span>🌍</span> World & Setting</h4>
+                <p class="story-section-body" id="sectionSetting"></p>
+              </div>
+              <div class="story-section-card" id="cardCharacters">
+                <h4 class="story-section-title"><span>👥</span> Key Characters</h4>
+                <p class="story-section-body" id="sectionCharacters"></p>
+              </div>
+            </div>
+
+            <!-- Act I -->
+            <div class="story-section-card" id="cardIntro">
+              <h4 class="story-section-title"><span>🌱</span> Act I: The Beginning</h4>
+              <p class="story-section-body" id="sectionIntro"></p>
+            </div>
+
+            <!-- Act II & Conflict -->
+            <div class="story-section-card" id="cardMainPlot">
+              <h4 class="story-section-title"><span>⚡</span> Act II: The Conflict & Journey</h4>
+              <p class="story-section-body" id="sectionMainPlot"></p>
+            </div>
+
+            <!-- Act III / Climax -->
+            <div class="story-section-card" id="cardClimax">
+              <h4 class="story-section-title"><span>🔥</span> Act III: The Climax</h4>
+              <p class="story-section-body" id="sectionClimax"></p>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="story-section-card" id="cardConclusion">
+              <h4 class="story-section-title"><span>✨</span> Conclusion & Resolution</h4>
+              <p class="story-section-body" id="sectionConclusion"></p>
+            </div>
+
+            <!-- Moral / Theme -->
+            <div class="story-section-card" id="cardMoral">
+              <h4 class="story-section-title"><span>💡</span> Moral / Core Theme</h4>
+              <p class="story-section-body" id="sectionMoral"></p>
+            </div>
+          </div>
+
+          <!-- 2. Editable Full Manuscript View -->
+          <div class="editable-manuscript-view" id="editableView">
+            <textarea class="story-textarea-editable" id="storyEditableTextarea" aria-label="Editable Story Manuscript"></textarea>
+            <div class="form-hint" style="margin-top: 0.5rem;">
+              <span>You can edit this manuscript directly. Changes will be preserved for Expand, Shorten, and Continue.</span>
+              <span id="editableCharCounter">0 characters</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>&copy; 2026 StoryVerse AI — Final Year College Project</div>
+      <div class="backend-status-badge">
+        <span class="status-dot"></span>
+        <span class="status-text">Backend Status</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/story.js"></script>
+</body>
+</html>

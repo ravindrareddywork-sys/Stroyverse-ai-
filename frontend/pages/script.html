@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Script Generator — StoryVerse AI</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/story.css">
+  <link rel="stylesheet" href="../css/script.css">
+  
+  <script src="../js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">
+        <div class="brand-icon">✨</div>
+        <span>StoryVerse AI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="story.html" class="nav-link">Story Generator</a></li>
+          <li><a href="script.html" class="nav-link active">Script Generator</a></li>
+          <li><a href="characters.html" class="nav-link">Characters</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="editor.html" class="nav-link">Workspace</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" aria-label="Toggle Theme">
+          <svg class="theme-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg class="theme-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <button class="mobile-toggle" aria-label="Open Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="generator-page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title"><span>🎬</span> Screenplay Studio</h1>
+        <p class="page-subtitle">Generate production-ready screenplay scripts with industry-standard scene headings, character action lines, and dialogue blocks.</p>
+      </div>
+
+      <div class="generator-layout">
+        <!-- Input Form Card -->
+        <div class="card">
+          <form id="scriptForm">
+            <!-- Topic / Logline -->
+            <div class="form-group">
+              <label for="scriptTopic" class="form-label">Script Logline or Scene Premise <span class="required">*</span></label>
+              <textarea id="scriptTopic" class="form-control" placeholder="E.g., Two rival detectives trapped in an abandoned subway station discover the criminal they're hunting is orchestrating the train schedule from within..." maxlength="2000" rows="4" required></textarea>
+              <div class="form-hint">
+                <span>Core dramatic hook or sequence premise</span>
+                <span id="scriptCharCount">0 / 2000</span>
+              </div>
+            </div>
+
+            <!-- Genre & Language -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="scriptGenre" class="form-label">Genre <span class="required">*</span></label>
+                <select id="scriptGenre" class="form-control form-select">
+                  <option value="Thriller" selected>Thriller</option>
+                  <option value="Action">Action</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Science Fiction">Science Fiction</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Romance">Romance</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="scriptLanguage" class="form-label">Language <span class="required">*</span></label>
+                <select id="scriptLanguage" class="form-control form-select">
+                  <option value="English" selected>English</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Hindi">Hindi (हिंदी)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Number of Scenes & Tone -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="numScenes" class="form-label">Number of Scenes (1 - 20)</label>
+                <input type="number" id="numScenes" class="form-control" min="1" max="20" value="3">
+              </div>
+
+              <div class="form-group">
+                <label for="scriptTone" class="form-label">Tone & Pacing</label>
+                <select id="scriptTone" class="form-control form-select">
+                  <option value="Suspenseful" selected>Suspenseful & Fast-Paced</option>
+                  <option value="Emotional">Emotional & Dialogue-Heavy</option>
+                  <option value="Funny">Comedic & Quirky</option>
+                  <option value="Dark">Dark & Atmospheric</option>
+                  <option value="Inspirational">Inspirational & High-Stakes</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Characters involved -->
+            <div class="form-group">
+              <label for="scriptCharacters" class="form-label">Key Characters & Roles (Optional)</label>
+              <input type="text" id="scriptCharacters" class="form-control" placeholder="E.g., RAMESH (40s, weary cop), ANANYA (20s, hacker prodigy)">
+            </div>
+
+            <!-- Setting -->
+            <div class="form-group">
+              <label for="scriptSetting" class="form-label">Primary Locations & Sluglines (Optional)</label>
+              <input type="text" id="scriptSetting" class="form-control" placeholder="E.g., INT. SUBWAY STATION - NIGHT, EXT. SEATTLE ROOFTOP - RAIN">
+            </div>
+
+            <!-- Additional Creative Instructions -->
+            <div class="form-group">
+              <label for="scriptInstructions" class="form-label">Custom Directives / Directorial Notes (Optional)</label>
+              <input type="text" id="scriptInstructions" class="form-control" placeholder="E.g., Open with rapid cross-cutting; highlight subtextual betrayal...">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="generateScriptBtn">
+              <span class="btn-text">🎬 Generate Screenplay</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Sidebar Guidelines -->
+        <div class="preview-sidebar">
+          <div class="card">
+            <h3 class="card-title" style="font-size: 1.15rem;">Configuration Summary</h3>
+            <p class="card-subtitle">Live screenplay parameters</p>
+
+            <ul class="parameter-summary">
+              <li>
+                <span class="parameter-label">Genre:</span>
+                <span class="parameter-val" id="summaryScriptGenre">Thriller</span>
+              </li>
+              <li>
+                <span class="parameter-label">Language:</span>
+                <span class="parameter-val" id="summaryScriptLanguage">English</span>
+              </li>
+              <li>
+                <span class="parameter-label">Target Scenes:</span>
+                <span class="parameter-val" id="summaryScriptScenes">3 Scenes</span>
+              </li>
+              <li>
+                <span class="parameter-label">Tone:</span>
+                <span class="parameter-val" id="summaryScriptTone">Suspenseful</span>
+              </li>
+            </ul>
+
+            <div class="script-format-guide">
+              <h4><span>📜</span> Industry Screenplay Rules</h4>
+              <ul class="script-elements-list">
+                <li><span class="element-pill">SLUGLINE</span> INT./EXT. LOCATION - TIME (uppercase)</li>
+                <li><span class="element-pill">ACTION</span> 3-line max present tense visual prose</li>
+                <li><span class="element-pill">CHARACTER</span> Centered capitalized cue names</li>
+                <li><span class="element-pill">DIALOGUE</span> Formatted spoken text with parentheticals</li>
+                <li><span class="element-pill">TRANSITION</span> CUT TO:, FADE OUT:</li>
+              </ul>
+            </div>
+
+            <div class="tip-box" style="margin-top: 1.25rem;">
+              <h4>🎬 Screenwriting Tip</h4>
+              <p>Keep action blocks concise and visual. Give each speaking character a distinct subtext or hidden agenda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State Overlay -->
+      <div class="story-loading-state" id="scriptLoadingState" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-clapper">🎬</div>
+        <h3 class="loading-title">Drafting Production Screenplay...</h3>
+        <p class="loading-subtitle">Formatting sluglines, action beats, and cinematic dialogues via Gemini AI.</p>
+        <div class="loading-progress-bar">
+          <div class="loading-progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Generated Screenplay Result Section -->
+      <section class="script-result-section" id="scriptResultSection" style="display: none;">
+        <div class="script-result-card">
+          <!-- Header Row -->
+          <div class="script-header-row">
+            <div>
+              <h2 class="script-title-display" id="resultScriptTitle">Screenplay Title</h2>
+              <div class="script-meta-tags">
+                <span class="badge badge-primary" id="resultGenreBadge">Thriller</span>
+                <span class="badge badge-secondary" id="resultLanguageBadge">English</span>
+                <span class="badge badge-secondary" id="resultScenesBadge">3 Scenes</span>
+                <span class="badge badge-secondary" id="resultToneBadge">Suspenseful</span>
+              </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="script-action-toolbar">
+              <button class="btn btn-secondary btn-sm" id="scriptSaveProjectBtn" title="Save to database portfolio">
+                <span>💾 Save Project</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="scriptCopyBtn" title="Copy to clipboard">
+                <span>📋 Copy Script</span>
+              </button>
+              <div class="dropdown-wrapper">
+                <button class="btn btn-secondary btn-sm" id="scriptExportBtn" title="Export screenplay">
+                  <span>📥 Export ▾</span>
+                </button>
+                <div class="export-dropdown-menu" id="scriptExportMenu" style="display: none;">
+                  <button class="dropdown-item" data-format="txt"><span>📄 Plain Text (.txt)</span></button>
+                  <button class="dropdown-item" data-format="pdf"><span>📑 PDF Document (.pdf)</span></button>
+                  <button class="dropdown-item" data-format="docx"><span>📝 Word Document (.docx)</span></button>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="scriptGenerateSceneBtn" title="Generate Next Scene">
+                <span>➕ Add Scene</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="scriptRegenerateBtn" title="Regenerate script">
+                <span>🔄 Regenerate</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Logline Banner -->
+          <div class="script-logline-box" id="resultScriptLoglineBox">
+            <span class="logline-tag">LOGLINE</span>
+            <p id="resultScriptLogline" class="logline-text"></p>
+          </div>
+
+          <!-- Characters Banner -->
+          <div class="script-characters-box" id="resultScriptCharactersBox" style="display: none;">
+            <span class="characters-tag">CHARACTERS</span>
+            <p id="resultScriptCharacters" class="characters-text"></p>
+          </div>
+
+          <!-- View Mode Toggle -->
+          <div class="script-view-modes">
+            <button class="view-mode-btn active" id="viewScreenplayBtn">🎬 Screenplay Format (Courier)</button>
+            <button class="view-mode-btn" id="viewSceneCardsBtn">📑 Scene Breakdown Cards</button>
+            <button class="view-mode-btn" id="viewEditableBtn">✏️ Editable Manuscript</button>
+          </div>
+
+          <!-- 1. Screenplay Format View (Hollywood Standard) -->
+          <div class="screenplay-view-container" id="screenplayView">
+            <div class="screenplay-page" id="screenplayContent">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- 2. Scene Cards View -->
+          <div class="scene-cards-container" id="sceneCardsView" style="display: none;">
+            <!-- Rendered via JS -->
+          </div>
+
+          <!-- 3. Editable Textarea View -->
+          <div class="script-editable-view" id="editableView" style="display: none;">
+            <label for="scriptEditableText" class="form-label" style="font-weight: 600;">Full Screenplay Text (Editable)</label>
+            <textarea id="scriptEditableText" class="script-editor-textarea" rows="22"></textarea>
+            <div class="form-hint" style="margin-top: 0.5rem;">
+              <span>Changes made here can be copied directly or exported.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>&copy; 2026 StoryVerse AI — Final Year College Project</div>
+      <div class="backend-status-badge">
+        <span class="status-dot"></span>
+        <span class="status-text">Backend Status</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/script.js"></script>
+</body>
+</html>
