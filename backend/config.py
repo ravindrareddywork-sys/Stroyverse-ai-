@@ -50,10 +50,16 @@ class Config:
 
     # --- CORS ---
     # Which frontend origins are allowed to call our API
-    CORS_ORIGINS = os.environ.get(
-        "CORS_ORIGINS",
-        "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000,http://localhost:5000,http://127.0.0.1:5000"
-    ).split(",")
+    CORS_ORIGINS = [
+        origin.strip()
+        for origin in os.environ.get(
+            "CORS_ORIGINS",
+            "https://storyverse-ai-frontend.onrender.com,http://localhost:3000,http://127.0.0.1:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000,http://localhost:5000,http://127.0.0.1:5000"
+        ).split(",")
+        if origin.strip()
+    ]
+    if "https://storyverse-ai-frontend.onrender.com" not in CORS_ORIGINS:
+        CORS_ORIGINS.append("https://storyverse-ai-frontend.onrender.com")
 
     # --- Rate Limiting ---
     RATELIMIT_DEFAULT = os.environ.get("RATE_LIMIT_DEFAULT", "2000 per day, 500 per hour")

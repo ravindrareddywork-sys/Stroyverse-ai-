@@ -89,6 +89,15 @@
 
         return data !== null ? data : { success: true };
       } catch (err) {
+        if (err.name === 'TypeError') {
+          const connectionError = new Error(
+            `Could not connect to the StoryVerse backend at ${API_BASE_URL}. ` +
+            'Check that the backend is online and allows requests from this frontend (CORS).'
+          );
+          connectionError.cause = err;
+          console.error(`API Error [${endpoint}]:`, connectionError);
+          throw connectionError;
+        }
         console.error(`API Error [${endpoint}]:`, err);
         throw err;
       }
@@ -96,9 +105,10 @@
 
     if (method === 'GET') {
       inFlightGetRequests.set(url, execPromise);
-      execPromise.finally(() => {
+      const clearInFlightRequest = () => {
         inFlightGetRequests.delete(url);
-      });
+      };
+      execPromise.then(clearInFlightRequest, clearInFlightRequest);
     }
 
     return execPromise;
