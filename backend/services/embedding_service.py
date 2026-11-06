@@ -7,7 +7,7 @@ Supports multilingual encoding (English, Telugu, Tamil, Hindi, and 50+ languages
 Architecture:
   - SentenceTransformer model: defaults to 'all-MiniLM-L6-v2' (or multilingual MiniLM)
   - Lazy loading: Model is initialized on first encode call to preserve fast app startup
-  - Deterministic Mock Mode: Fast, normalized vector synthesis for unit & integration testing
+  - Deterministic Mock Mode: Explicitly enabled for unit testing only
 """
 
 import os
@@ -16,6 +16,8 @@ import math
 import hashlib
 import logging
 from typing import List, Optional
+
+from .rag_errors import RAGUnavailableError
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +55,11 @@ class EmbeddingService:
                 self._model = SentenceTransformer(self.model_name)
                 logger.info("SentenceTransformer model loaded successfully.")
             except Exception as err:
-                logger.warning(
-                    f"Could not load SentenceTransformer ('{err}'). Falling back to deterministic embedding mode."
-                )
-                self._mock_mode = True
+                logger.exception("Could not load SentenceTransformer model '%s'.", self.model_name)
+                raise RAGUnavailableError(
+                    f"The configured RAG embedding model '{self.model_name}' is unavailable. "
+                    "Check backend logs and model download/runtime configuration."
+                ) from err
         return self._model
 
     def _format_text(self, text: str, is_query: bool = False) -> str:
@@ -95,9 +98,16 @@ class EmbeddingService:
                 embeddings = model.encode(texts, show_progress_bar=False, convert_to_numpy=True)
                 return embeddings.tolist()
         except Exception as err:
-            logger.error(f"Error during SentenceTransformer encoding: {err}. Falling back to mock vectors.")
+            if isinstance(err, RAGUnavailableError):
+                raise
+            logger.exception("SentenceTransformer encoding failed for model '%s'.", self.model_name)
+            raise RAGUnavailableError(
+                f"The configured RAG embedding model '{self.model_name}' failed to encode text."
+            ) from err
 
-        return [self._generate_mock_vector(t) for t in texts]
+        raise RAGUnavailableError(
+            f"The configured RAG embedding model '{self.model_name}' is unavailable."
+        )
 
     def encode_passages(self, texts: List[str]) -> List[List[float]]:
         """Encodes passages/documents for vector indexing with 'passage: ' prefix for E5."""

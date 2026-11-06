@@ -14,6 +14,7 @@ import logging
 from typing import Dict, Any, Optional
 
 from .ai_service import ai_service
+from .rag_errors import RAGUnavailableError
 from .prompt_service import (
     SYSTEM_INSTRUCTION_CREATIVE,
     build_rewrite_prompt,
@@ -142,14 +143,16 @@ class WritingAssistantService:
                     p_id = params.get("project_id") or params.get("rag_project_id")
                     retrieved_context = rag_service.retrieve_context(
                         query=query,
-                        n_results=params.get("rag_n_results", 3),
-                        project_id=p_id,
-                        language=params.get("language")
+                        n_results=params.get("rag_n_results", rag_service.default_top_k),
+                        project_id=p_id
                     )
                     if retrieved_context:
                         params["rag_context"] = build_rag_context_block(retrieved_context)
+                except RAGUnavailableError:
+                    raise
                 except Exception as e:
-                    logger.warning(f"RAG retrieval skipped in generate_dialogue: {e}")
+                    logger.exception("RAG retrieval failed in generate_dialogue.")
+                    raise RAGUnavailableError("RAG retrieval is unavailable.") from e
 
         dialogue_params = {
             "context": context,
@@ -250,14 +253,16 @@ class WritingAssistantService:
                     p_id = params.get("project_id") or params.get("rag_project_id")
                     retrieved_context = rag_service.retrieve_context(
                         query=query,
-                        n_results=params.get("rag_n_results", 3),
-                        project_id=p_id,
-                        language=language
+                        n_results=params.get("rag_n_results", rag_service.default_top_k),
+                        project_id=p_id
                     )
                     if retrieved_context:
                         params["rag_context"] = build_rag_context_block(retrieved_context)
+                except RAGUnavailableError:
+                    raise
                 except Exception as e:
-                    logger.warning(f"RAG retrieval skipped in continue_writing: {e}")
+                    logger.exception("RAG retrieval failed in continue_writing.")
+                    raise RAGUnavailableError("RAG retrieval is unavailable.") from e
 
         prompt = build_continue_prompt(
             content=content,

@@ -23,6 +23,7 @@ import chromadb
 from chromadb.api.types import EmbeddingFunction
 
 from .embedding_service import embedding_service, EmbeddingService
+from .rag_errors import RAGUnavailableError
 
 logger = logging.getLogger(__name__)
 
@@ -61,28 +62,46 @@ class RAGService:
     def __init__(
         self,
         persist_directory: Optional[str] = None,
-        collection_name: str = DEFAULT_COLLECTION_NAME,
+        collection_name: Optional[str] = None,
         embed_service: Optional[EmbeddingService] = None
     ):
         self.persist_directory = persist_directory or self._default_persist_dir()
-        self.collection_name = collection_name
+        self.collection_name = (
+            collection_name
+            or os.environ.get("RAG_COLLECTION_NAME")
+            or DEFAULT_COLLECTION_NAME
+        )
+        self.default_top_k = int(os.environ.get("RAG_DEFAULT_TOP_K", 3))
+        self.enabled = os.environ.get("RAG_ENABLED", "true").strip().lower() in ("true", "1", "yes")
         self.embed_service = embed_service or embedding_service
         self._client = None
         self._collection = None
 
     def _default_persist_dir(self) -> str:
         """Determines default local directory for persistent ChromaDB storage."""
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "instance", "chroma_db"))
-        os.makedirs(base_dir, exist_ok=True)
+        configured_dir = os.environ.get("CHROMA_PERSIST_DIRECTORY")
+        backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        if configured_dir:
+            base_dir = configured_dir
+            if not os.path.isabs(base_dir):
+                base_dir = os.path.join(backend_dir, base_dir)
+            base_dir = os.path.abspath(base_dir)
+        else:
+            base_dir = os.path.join(backend_dir, "instance", "chroma_db")
         return base_dir
 
     @property
     def client(self) -> chromadb.PersistentClient:
         """Lazy-loaded persistent Chroma client."""
+        self._ensure_enabled()
         if self._client is None:
             os.makedirs(self.persist_directory, exist_ok=True)
             self._client = chromadb.PersistentClient(path=self.persist_directory)
         return self._client
+
+    def _ensure_enabled(self) -> None:
+        if not self.enabled:
+            raise RAGUnavailableError("RAG is disabled by configuration.")
 
     @property
     def collection(self):
@@ -265,7 +284,7 @@ class RAGService:
     def retrieve_context(
         self,
         query: str,
-        n_results: int = 3,
+        n_results: Optional[int] = None,
         project_id: Optional[int] = None,
         genre: Optional[str] = None,
         language: Optional[str] = None,
@@ -288,6 +307,7 @@ class RAGService:
         query = (query or "").strip()
         if not query:
             return []
+        n_results = n_results or self.default_top_k
 
         # Check if collection is empty
         count = self.collection.count()
@@ -314,6 +334,9 @@ class RAGService:
                 ]
             })
 
+        if language:
+            where_conditions.append({"language": str(language)})
+
         if doc_type:
             where_conditions.append({"doc_type": str(doc_type).lower()})
 
@@ -333,11 +356,10 @@ class RAGService:
                 where=where_filter
             )
         except Exception as err:
-            logger.warning(f"ChromaDB query with filter failed ('{err}'). Retrying without metadata filter.")
-            results = self.collection.query(
-                query_texts=[query],
-                n_results=query_n
-            )
+            logger.exception("ChromaDB query failed; refusing an unfiltered retry.")
+            raise RAGUnavailableError(
+                "RAG retrieval failed while applying project and metadata filters."
+            ) from err
 
         retrieved_chunks = []
         if results and results.get("documents") and results["documents"][0]:
@@ -387,8 +409,11 @@ class RAGService:
 
         try:
             results = self.collection.get(where=where_filter, include=["metadatas", "documents"])
-        except Exception:
-            results = self.collection.get(include=["metadatas", "documents"])
+        except Exception as err:
+            logger.exception("ChromaDB document listing failed; refusing an unfiltered retry.")
+            raise RAGUnavailableError(
+                "RAG document listing failed while applying project filters."
+            ) from err
 
         if not results or not results.get("metadatas"):
             return []
@@ -461,6 +486,19 @@ class RAGService:
         """
         Returns health and metrics of the RAG vector store.
         """
+        if not self.enabled:
+            return {
+                "status": "disabled",
+                "collection_name": self.collection_name,
+                "embedding_model": self.embed_service.model_name,
+                "embedding_mode": (
+                    "deterministic_mock"
+                    if self.embed_service.is_mock_mode
+                    else "sentence_transformers"
+                ),
+                "embedding_dimension": 384,
+                "distance_metric": "cosine"
+            }
         total_vectors = self.collection.count()
         return {
             "status": "ready",
@@ -469,6 +507,11 @@ class RAGService:
             "total_documents": len(self.list_documents()),
             "persist_directory": self.persist_directory,
             "embedding_model": self.embed_service.model_name,
+            "embedding_mode": (
+                "deterministic_mock"
+                if self.embed_service.is_mock_mode
+                else "sentence_transformers"
+            ),
             "embedding_dimension": 384,
             "distance_metric": "cosine"
         }

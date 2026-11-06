@@ -28,6 +28,7 @@ from .ai_provider import (
     AIMalformedResponseError,
     sanitize_error_message
 )
+from .rag_errors import RAGUnavailableError
 from utils.response import (
     error_response,
     server_error_response,
@@ -140,6 +141,13 @@ class AIService:
         Prevents leaking API keys or internal stack traces.
         """
         logger.error(f"AI Service Exception: {type(err).__name__} - {sanitize_error_message(str(err))}")
+
+        if isinstance(err, RAGUnavailableError):
+            return error_response(
+                message=str(err),
+                errors={"rag": "Semantic retrieval is unavailable."},
+                status_code=503
+            )
 
         if isinstance(err, AIConfigurationError):
             return error_response(

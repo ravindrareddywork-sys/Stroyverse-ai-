@@ -14,6 +14,7 @@ import logging
 from flask import Blueprint, request
 
 from services.rag_service import rag_service
+from services.rag_errors import RAGUnavailableError
 from utils.validators import validate_rag_ingest_input, validate_rag_query_input
 from utils.response import (
     success_response,
@@ -58,6 +59,12 @@ def ingest_document():
         )
         return created_response("Document ingested into vector knowledge base successfully.", data=result)
 
+    except RAGUnavailableError as err:
+        return error_response(
+            str(err),
+            errors={"rag": "Semantic retrieval is unavailable."},
+            status_code=503
+        )
     except ValueError as val_err:
         return error_response(str(val_err), status_code=400)
     except Exception as err:
@@ -87,6 +94,12 @@ def list_documents():
             data={"documents": docs, "total": len(docs)}
         )
 
+    except RAGUnavailableError as err:
+        return error_response(
+            str(err),
+            errors={"rag": "Semantic retrieval is unavailable."},
+            status_code=503
+        )
     except Exception as err:
         logger.error(f"Error in /api/rag/documents: {err}", exc_info=True)
         return server_error_response("Failed to retrieve documents.")
@@ -105,6 +118,12 @@ def get_document(doc_id):
 
         return success_response("Document details retrieved successfully.", data=doc)
 
+    except RAGUnavailableError as err:
+        return error_response(
+            str(err),
+            errors={"rag": "Semantic retrieval is unavailable."},
+            status_code=503
+        )
     except Exception as err:
         logger.error(f"Error in /api/rag/documents/{doc_id}: {err}", exc_info=True)
         return server_error_response("Failed to retrieve document details.")
@@ -130,6 +149,12 @@ def delete_document(doc_id):
             data={"document_id": doc_id}
         )
 
+    except RAGUnavailableError as err:
+        return error_response(
+            str(err),
+            errors={"rag": "Semantic retrieval is unavailable."},
+            status_code=503
+        )
     except Exception as err:
         logger.error(f"Error in DELETE /api/rag/documents/{doc_id}: {err}", exc_info=True)
         return server_error_response("Failed to delete document.")
@@ -151,7 +176,7 @@ def query_rag():
             return error_response("Validation failed. Please check your inputs.", errors=errors, status_code=400)
 
         query = data.get("query")
-        n_results = int(data.get("n_results", 3))
+        n_results = int(data.get("n_results", rag_service.default_top_k))
         p_id = data.get("project_id")
         project_id = int(p_id) if p_id is not None and str(p_id).strip() != "" else None
         genre = data.get("genre")
@@ -172,10 +197,21 @@ def query_rag():
             data={
                 "query": query,
                 "retrieved_chunks": results,
-                "count": len(results)
+                "count": len(results),
+                "embedding_mode": (
+                    "deterministic_mock"
+                    if rag_service.embed_service.is_mock_mode
+                    else "sentence_transformers"
+                )
             }
         )
 
+    except RAGUnavailableError as err:
+        return error_response(
+            str(err),
+            errors={"rag": "Semantic retrieval is unavailable."},
+            status_code=503
+        )
     except Exception as err:
         logger.error(f"Error in /api/rag/query: {err}", exc_info=True)
         return server_error_response("Failed to perform semantic retrieval.")
@@ -191,6 +227,12 @@ def get_status():
         status_data = rag_service.get_status()
         return success_response("RAG vector store status retrieved.", data=status_data)
 
+    except RAGUnavailableError as err:
+        return error_response(
+            str(err),
+            errors={"rag": "Semantic retrieval is unavailable."},
+            status_code=503
+        )
     except Exception as err:
         logger.error(f"Error in /api/rag/status: {err}", exc_info=True)
         return server_error_response("Failed to retrieve vector store status.")

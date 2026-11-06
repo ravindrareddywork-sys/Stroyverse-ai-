@@ -15,8 +15,9 @@ Comprehensive test suite validating:
 
 import os
 import pytest
-from services.embedding_service import EmbeddingService, embedding_service
+from services.embedding_service import EmbeddingService
 from services.rag_service import RAGService, ChromaEmbeddingAdapter
+from services.rag_errors import RAGUnavailableError
 from services.prompt_service import (
     build_rag_context_block,
     build_story_prompt,
@@ -52,9 +53,9 @@ class TestEmbeddingService:
         for v in vectors:
             assert len(v) == 384
 
-    def test_multilingual_text_embedding_no_crash(self):
-        """Embedder must process English, Telugu, Tamil, and Hindi without crashing."""
-        embedder = embedding_service
+    def test_mock_multilingual_text_embedding_dimensions(self):
+        """Explicit test embeddings must handle multilingual input at the expected dimension."""
+        embedder = EmbeddingService(force_mock=True)
         multilingual_samples = [
             "The warrior held a blazing sword.",
             "పురాతన దేవాలయంలో ఒక రహస్య గ్రంథం దాగి ఉంది.",
@@ -75,13 +76,18 @@ class TestEmbeddingService:
         assert embedder._format_text("query: hello", is_query=True) == "query: hello"
         assert embedder._format_text("passage: hello", is_query=False) == "passage: hello"
 
-    def test_multilingual_semantic_similarity_ranking(self):
+    @pytest.mark.skipif(
+        os.environ.get("RUN_RAG_MODEL_INTEGRATION_TESTS") != "1",
+        reason="Set RUN_RAG_MODEL_INTEGRATION_TESTS=1 to run the real E5 model integration test."
+    )
+    def test_real_multilingual_e5_semantic_similarity_ranking(self):
         """
         Tests semantic retrieval across English, Telugu, Tamil, and Hindi.
         Verifies that relevant query embeddings match target passages closer than unrelated passages.
         """
         import numpy as np
         embedder = EmbeddingService(model_name="intfloat/multilingual-e5-small", mock_mode=False)
+        assert not embedder.is_mock_mode
 
         def cosine_sim(v1, v2):
             a = np.array(v1)
@@ -158,17 +164,13 @@ class TestRAGVectorStore:
     """Verifies ChromaDB ingestion, retrieval, filtering, and isolation."""
 
     @pytest.fixture(autouse=True)
-    def setup_rag(self):
+    def setup_rag(self, tmp_path):
         """Initializes a clean RAG service collection for tests."""
-        self.rag = RAGService(collection_name="test_storyverse_kb")
-        yield
-        # Clean up test collection
-        try:
-            docs = self.rag.list_documents()
-            for doc in docs:
-                self.rag.delete_document(doc["document_id"])
-        except Exception:
-            pass
+        self.rag = RAGService(
+            persist_directory=str(tmp_path / "chroma"),
+            collection_name="test_storyverse_kb",
+            embed_service=EmbeddingService(force_mock=True)
+        )
 
     def test_ingest_and_retrieve_document(self):
         """Document must be indexed in vector store and retrievable by similarity."""
@@ -208,6 +210,23 @@ class TestRAGVectorStore:
         assert len(sci_fi_results) >= 1
         for res in sci_fi_results:
             assert res["genre"] == "sci-fi"
+
+    def test_metadata_filtering_by_language(self):
+        self.rag.ingest_document(
+            title="English Notes",
+            content="The western tower hides a silver key beneath its foundation.",
+            language="English"
+        )
+        self.rag.ingest_document(
+            title="Telugu Notes",
+            content="ఈ కథలోని పాత్రలు ఒక రహస్యమైన కోటలో ప్రయాణిస్తారు.",
+            language="Telugu"
+        )
+
+        results = self.rag.retrieve_context("tower silver key", language="English")
+
+        assert results
+        assert all(result["language"] == "English" for result in results)
 
     def test_project_lore_isolation(self):
         """
@@ -263,7 +282,11 @@ class TestRAGVectorStore:
         and confirms the document remains retrievable.
         """
         persist_dir = str(tmp_path / "chroma_persist_test")
-        rag_instance1 = RAGService(persist_directory=persist_dir, collection_name="persist_col")
+        rag_instance1 = RAGService(
+            persist_directory=persist_dir,
+            collection_name="persist_col",
+            embed_service=EmbeddingService(force_mock=True)
+        )
         ingest_res = rag_instance1.ingest_document(
             title="Durable Archive",
             content="The ancient obsidian tablets survived the fire of Mount Vesuvius.",
@@ -276,7 +299,11 @@ class TestRAGVectorStore:
         del rag_instance1
 
         # Recreate application / RAGService pointing to exact same directory
-        rag_instance2 = RAGService(persist_directory=persist_dir, collection_name="persist_col")
+        rag_instance2 = RAGService(
+            persist_directory=persist_dir,
+            collection_name="persist_col",
+            embed_service=EmbeddingService(force_mock=True)
+        )
         
         # Verify document still exists by ID
         doc = rag_instance2.get_document(doc_id)
@@ -322,6 +349,78 @@ class TestRAGVectorStore:
         assert "collection_name" in status
         assert status["embedding_dimension"] == 384
         assert status["distance_metric"] == "cosine"
+        assert status["embedding_mode"] == "deterministic_mock"
+
+    def test_retrieval_filter_failure_does_not_retry_unfiltered(self, monkeypatch):
+        self.rag.ingest_document(
+            title="Private project lore",
+            content="The private silver key is hidden under the western tower.",
+            project_id=100
+        )
+        collection = self.rag.collection
+        query_calls = []
+
+        def fail_filtered_query(**kwargs):
+            query_calls.append(kwargs)
+            raise RuntimeError("unsupported filter")
+
+        monkeypatch.setattr(collection, "query", fail_filtered_query)
+
+        with pytest.raises(RAGUnavailableError, match="project and metadata filters"):
+            self.rag.retrieve_context("silver key", project_id=100)
+
+        assert len(query_calls) == 1
+        assert query_calls[0]["where"] is not None
+
+    def test_document_listing_filter_failure_does_not_retry_unfiltered(self, monkeypatch):
+        self.rag.ingest_document(
+            title="Private project lore",
+            content="The private silver key is hidden under the western tower.",
+            project_id=100
+        )
+        collection = self.rag.collection
+        get_calls = []
+
+        def fail_filtered_get(**kwargs):
+            get_calls.append(kwargs)
+            raise RuntimeError("unsupported filter")
+
+        monkeypatch.setattr(collection, "get", fail_filtered_get)
+
+        with pytest.raises(RAGUnavailableError, match="project filters"):
+            self.rag.list_documents(project_id=100)
+
+        assert len(get_calls) == 1
+        assert get_calls[0]["where"] is not None
+
+    def test_environment_configuration_is_applied(self, monkeypatch, tmp_path):
+        persist_directory = str(tmp_path / "configured-chroma")
+        monkeypatch.setenv("CHROMA_PERSIST_DIRECTORY", persist_directory)
+        monkeypatch.setenv("RAG_COLLECTION_NAME", "configured_collection")
+        monkeypatch.setenv("RAG_DEFAULT_TOP_K", "7")
+        monkeypatch.setenv("RAG_ENABLED", "false")
+
+        rag = RAGService(embed_service=EmbeddingService(force_mock=True))
+
+        assert rag.persist_directory == persist_directory
+        assert rag.collection_name == "configured_collection"
+        assert rag.default_top_k == 7
+        assert rag.get_status()["status"] == "disabled"
+        with pytest.raises(RAGUnavailableError, match="disabled"):
+            _ = rag.collection
+
+
+class TestRAGModelFailure:
+    def test_model_load_failure_is_not_replaced_with_mock_embeddings(self, monkeypatch):
+        embedder = EmbeddingService(force_mock=False)
+
+        def fail_model_load():
+            raise RuntimeError("model unavailable")
+
+        monkeypatch.setattr(embedder, "_get_model", fail_model_load)
+
+        with pytest.raises(RAGUnavailableError, match="failed to encode text"):
+            embedder.encode(["test text"])
 
 
 # ============================================================
@@ -384,6 +483,14 @@ class TestRAGPromptConstruction:
 class TestRAGRoutes:
     """Verifies all /api/rag/* HTTP endpoints."""
 
+    @pytest.fixture(autouse=True)
+    def isolate_global_rag(self, tmp_path):
+        from services.rag_service import rag_service
+
+        rag_service.persist_directory = str(tmp_path / "chroma")
+        rag_service._client = None
+        rag_service._collection = None
+
     def test_rag_status_route(self, client):
         res = client.get("/api/rag/status")
         assert res.status_code == 200
@@ -391,6 +498,36 @@ class TestRAGRoutes:
         assert data["success"] is True
         assert data["data"]["embedding_dimension"] == 384
         assert data["data"]["distance_metric"] == "cosine"
+
+    def test_rag_disabled_returns_explicit_unavailable_response(self, client, monkeypatch):
+        from services.rag_service import rag_service
+
+        monkeypatch.setattr(rag_service, "enabled", False)
+
+        res = client.post("/api/rag/query", json={"query": "story lore"})
+
+        assert res.status_code == 503
+        assert res.get_json()["success"] is False
+        assert "disabled" in res.get_json()["message"]
+
+    def test_generation_reports_rag_retrieval_failure(self, client, monkeypatch):
+        from services.rag_service import rag_service
+
+        def fail_retrieval(**kwargs):
+            raise RAGUnavailableError("RAG retrieval is unavailable.")
+
+        monkeypatch.setattr(rag_service, "retrieve_context", fail_retrieval)
+
+        res = client.post("/api/generate-story", json={
+            "topic": "A story using established lore",
+            "genre": "Fantasy",
+            "language": "English",
+            "use_rag": True
+        })
+
+        assert res.status_code == 503
+        assert res.get_json()["success"] is False
+        assert res.get_json()["errors"]["rag"] == "Semantic retrieval is unavailable."
 
     def test_rag_ingest_route_valid(self, client):
         payload = {
