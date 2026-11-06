@@ -75,6 +75,50 @@ class TestProjectCreation:
             assert histories[0].operation == "initial_save"
             assert "obsidian" in histories[0].content_snapshot
 
+    def test_create_script_project_persists_content_and_generation_metadata(self, client, app):
+        """Saved scripts retain full content and their generation parameters after retrieval."""
+        script_content = "TITLE: The Last Signal\n\nINT. OBSERVATORY - NIGHT\nA signal cuts through the static."
+        generation_parameters = {
+            "topic": "A lone astronomer finds a message in deep space.",
+            "genre": "Science Fiction",
+            "language": "Hindi",
+            "tone": "Suspenseful",
+            "num_scenes": 4,
+            "characters": "Dr. Rao, an astronomer",
+            "setting": "A remote observatory",
+            "additional_instructions": "End on a revelation.",
+        }
+        response = client.post("/api/projects", json={
+            "title": "The Last Signal",
+            "content_type": "script",
+            "genre": generation_parameters["genre"],
+            "language": generation_parameters["language"],
+            "tone": generation_parameters["tone"],
+            "topic": generation_parameters["topic"],
+            "description": "An astronomer receives a message from beyond.",
+            "content": script_content,
+            "input_summary": "Science Fiction screenplay, Hindi, suspenseful, 4 scenes.",
+            "generation_parameters": generation_parameters,
+            "ai_model": "test-model",
+            "tokens_used": 123,
+        })
+
+        assert response.status_code == 201
+        project_id = response.get_json()["data"]["id"]
+        retrieved = client.get(f"/api/projects/{project_id}")
+        assert retrieved.status_code == 200
+        project = retrieved.get_json()["data"]
+        assert project["content_type"] == "script"
+        assert project["generated_content"] == script_content
+        assert project["topic"] == generation_parameters["topic"]
+        assert project["tone"] == generation_parameters["tone"]
+        assert len(project["history"]) == 1
+        assert project["history"][0]["content_snapshot"] == script_content
+        assert project["history"][0]["input_summary"] == "Science Fiction screenplay, Hindi, suspenseful, 4 scenes."
+        assert json.loads(project["history"][0]["prompt"]) == generation_parameters
+        assert project["history"][0]["ai_model"] == "test-model"
+        assert project["history"][0]["tokens_used"] == 123
+
     def test_create_project_character_type(self, client):
         """Creating a character project succeeds."""
         payload = {

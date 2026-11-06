@@ -11,6 +11,7 @@ Simple explanation:
   handles all of that.
 """
 
+import json
 import re
 
 # ============================================================
@@ -660,6 +661,28 @@ def validate_project_input(data, is_update=False):
         err = validate_optional_string(desc_val, "Description / Topic", MAX_TOPIC_LENGTH)
         if err:
             errors["description"] = err
+
+    if data.get("input_summary") is not None:
+        err = validate_optional_string(data.get("input_summary"), "Input summary", 500)
+        if err:
+            errors["input_summary"] = err
+
+    if data.get("ai_model") is not None:
+        err = validate_optional_string(data.get("ai_model"), "AI model", 100)
+        if err:
+            errors["ai_model"] = err
+
+    generation_parameters = data.get("generation_parameters")
+    if generation_parameters is not None:
+        if not isinstance(generation_parameters, dict):
+            errors["generation_parameters"] = "Generation parameters must be an object."
+        elif len(json.dumps(generation_parameters, ensure_ascii=False)) > 10000:
+            errors["generation_parameters"] = "Generation parameters are too large."
+
+    if data.get("tokens_used") is not None:
+        err = validate_integer_range(data.get("tokens_used"), "Tokens used", 0, 2147483647, required=False)
+        if err:
+            errors["tokens_used"] = err
 
     return errors
 

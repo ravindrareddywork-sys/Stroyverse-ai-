@@ -11,6 +11,10 @@
 
   // State
   let currentScriptData = null;
+  let currentScriptParameters = null;
+  let savedProjectId = null;
+  let lastSavedContent = null;
+  let isSavingProject = false;
 
   document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
@@ -157,6 +161,9 @@
 
         if (response && response.success && response.data) {
           currentScriptData = response.data;
+          currentScriptParameters = payload;
+          savedProjectId = null;
+          lastSavedContent = null;
           renderScreenplayResult(response.data);
           if (window.StoryVerse) {
             window.StoryVerse.showToast('🎬 Screenplay generated successfully!', 'success');
@@ -475,36 +482,98 @@
     const saveProjectBtn = document.getElementById('scriptSaveProjectBtn');
     if (saveProjectBtn) {
       saveProjectBtn.addEventListener('click', async () => {
+        if (isSavingProject) return;
         if (!currentScriptData) {
           if (window.StoryVerse) window.StoryVerse.showToast('No script generated yet to save.', 'warning');
           return;
         }
 
         const title = currentScriptData.title || 'Screenplay Project';
-        const content = scriptTextarea ? scriptTextarea.value.trim() : (currentScriptData.full_script || '');
+        const content = editableTextarea ? editableTextarea.value : (currentScriptData.full_script || '');
+        if (!content.trim()) {
+          if (window.StoryVerse) window.StoryVerse.showToast('The screenplay has no content to save.', 'warning');
+          return;
+        }
 
+        if (savedProjectId && content === lastSavedContent) {
+          if (window.StoryVerse) window.StoryVerse.showToast(`This screenplay is already saved as project #${savedProjectId}.`, 'info');
+          return;
+        }
+
+        const metadata = currentScriptData.metadata || {};
+        const generationParameters = {
+          ...(currentScriptParameters || {}),
+          topic: currentScriptParameters?.topic || metadata.topic || '',
+          genre: metadata.genre || currentScriptParameters?.genre || 'Thriller',
+          language: metadata.language || currentScriptParameters?.language || 'English',
+          tone: metadata.tone || currentScriptParameters?.tone || 'Suspenseful',
+          requested_scenes: metadata.requested_scenes || currentScriptParameters?.num_scenes || currentScriptData.scene_count,
+          detected_scenes: currentScriptData.scene_count || currentScriptData.scenes?.length || 0,
+          characters_summary: currentScriptData.characters_summary || '',
+          logline: currentScriptData.logline || ''
+        };
+        const inputSummary = [
+          `Topic: ${generationParameters.topic}`,
+          `Genre: ${generationParameters.genre}`,
+          `Language: ${generationParameters.language}`,
+          `Tone: ${generationParameters.tone}`,
+          `Scenes: ${generationParameters.requested_scenes}`
+        ].join(', ').slice(0, 500);
+
+        const isUpdatingProject = savedProjectId !== null;
+        isSavingProject = true;
         saveProjectBtn.disabled = true;
+        const originalButtonText = saveProjectBtn.textContent;
+        saveProjectBtn.textContent = isUpdatingProject ? 'Saving Changes...' : 'Saving...';
         try {
-          const res = await window.StoryVerseAPI.createProject({
-            title: title,
-            content_type: 'script',
-            genre: currentScriptData.metadata?.genre || 'Drama',
-            language: currentScriptData.metadata?.language || 'English',
-            description: currentScriptData.logline || undefined,
-            content: content
-          });
-
-          if (res.success && res.data) {
-            if (window.StoryVerse) {
-              window.StoryVerse.showToast(`Screenplay saved to portfolio! Project #${res.data.id}`, 'success');
-            }
+          let res;
+          if (isUpdatingProject) {
+            res = await window.StoryVerseAPI.updateProject(savedProjectId, {
+              title,
+              content_type: 'script',
+              genre: generationParameters.genre,
+              language: generationParameters.language,
+              tone: generationParameters.tone,
+              topic: generationParameters.topic,
+              description: generationParameters.logline || generationParameters.topic,
+              content
+            });
           } else {
-            throw new Error(res.message || 'Failed to save project.');
+            res = await window.StoryVerseAPI.createProject({
+              title,
+              content_type: 'script',
+              genre: generationParameters.genre,
+              language: generationParameters.language,
+              tone: generationParameters.tone,
+              topic: generationParameters.topic,
+              description: generationParameters.logline || generationParameters.topic,
+              content,
+              input_summary: inputSummary,
+              generation_parameters: generationParameters,
+              ai_model: metadata.model || metadata.provider || 'Gemini',
+              tokens_used: metadata.tokens_used
+            });
+          }
+
+          if (!res?.success || !res.data || res.data.id == null) {
+            throw new Error(res?.message || 'The server did not confirm that the screenplay was saved.');
+          }
+
+          savedProjectId = res.data.id;
+          lastSavedContent = content;
+          if (window.StoryVerse) {
+            const action = res.message || (isUpdatingProject ? 'Screenplay updated successfully.' : 'Screenplay saved successfully.');
+            window.StoryVerse.showToast(`${action} Project #${savedProjectId}`, 'success');
           }
         } catch (err) {
-          if (window.StoryVerse) window.StoryVerse.showToast(err.message || 'Error saving project.', 'error');
+          console.error('Screenplay save failed:', err);
+          if (window.StoryVerse) {
+            window.StoryVerse.showToast(err.message || 'Could not save the screenplay. Please try again.', 'error');
+          }
         } finally {
+          isSavingProject = false;
           saveProjectBtn.disabled = false;
+          saveProjectBtn.textContent = originalButtonText;
         }
       });
     }

@@ -8,6 +8,7 @@ Business logic and persistence operations for user creative projects:
   - Cascade management and transactional integrity
 """
 
+import json
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
@@ -49,11 +50,8 @@ class ProjectService:
         if content:
             content = content.strip()
 
-        desc_val = (
-            data.get("description")
-            or data.get("topic")
-            or ""
-        ).strip() or None
+        topic_val = (data.get("topic") or data.get("description") or "").strip() or None
+        desc_val = (data.get("description") or data.get("topic") or "").strip() or None
 
         project = Project(
             title=data["title"].strip(),
@@ -61,7 +59,7 @@ class ProjectService:
             genre=(data.get("genre") or "").strip() or None,
             language=(data.get("language") or "English").strip(),
             tone=(data.get("tone") or "").strip() or None,
-            topic=desc_val,
+            topic=topic_val,
             description=desc_val,
             generated_content=content,
         )
@@ -77,8 +75,17 @@ class ProjectService:
                     operation="initial_save",
                     content_type=content_type,
                     content_snapshot=content,
-                    input_summary=f"Initial {content_type} creation",
-                    ai_model=data.get("ai_model") or "Manual / System",
+                    input_summary=(
+                        data.get("input_summary")
+                        or f"Initial {content_type} creation"
+                    )[:500],
+                    prompt=(
+                        json.dumps(data["generation_parameters"], ensure_ascii=False)
+                        if data.get("generation_parameters") is not None
+                        else None
+                    ),
+                    ai_model=(data.get("ai_model") or "Manual / System")[:100],
+                    tokens_used=data.get("tokens_used"),
                 )
                 db.session.add(history_entry)
 

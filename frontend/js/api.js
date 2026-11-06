@@ -6,9 +6,11 @@
 (function () {
   'use strict';
 
-  // Configurable base URL for backend REST API
-  // In dev mode, Flask runs on http://127.0.0.1:5000
-  const API_BASE_URL = window.STORYVERSE_API_URL || 'http://127.0.0.1:5000';
+  // Supplied by js/config.js before this API client is loaded.
+  const API_BASE_URL = window.STORYVERSE_API_URL;
+  if (!API_BASE_URL) {
+    throw new Error('STORYVERSE_API_URL must be configured before loading the API client.');
+  }
 
   // In-flight GET request deduplication cache
   const inFlightGetRequests = new Map();
